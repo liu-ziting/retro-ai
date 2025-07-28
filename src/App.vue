@@ -15,16 +15,15 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 <!-- 左侧：会话管理 -->
                 <div class="lg:col-span-1">
                     <!-- 新建对话 -->
-                    <div class="bg-retro-green border-4 border-black shadow-retro mb-4 p-3">
-                        <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-3 inline-block">1. NEW CHAT</div>
-                        <button @click="createNewSession" class="w-full bg-white border-2 border-black p-4 hover:bg-gray-100 shadow-retro font-bold text-center">
-                            <div class="text-2xl mb-2">💬</div>
+                    <div class="bg-retro-green border-4 border-black shadow-retro mb-4 p-2">
+                        <div class="bg-black text-white px-2 py-1 text-xs font-bold mb-2 inline-block">1. NEW CHAT</div>
+                        <button @click="createNewSession" class="w-full bg-white border-2 border-black p-2 hover:bg-gray-100 shadow-retro font-bold text-center text-sm">
+                            <div class="text-lg mb-1">💬</div>
                             <div>START NEW CHAT</div>
-                            <div class="text-xs text-gray-600">Click to begin conversation</div>
                         </button>
                     </div>
 
@@ -56,7 +55,7 @@
                 </div>
 
                 <!-- 右侧：聊天区域 -->
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-3">
                     <!-- 聊天窗口 -->
                     <div class="bg-white border-4 border-black shadow-retro mb-4">
                         <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-0 flex items-center justify-between">
@@ -134,16 +133,13 @@
                                 rows="3"
                                 class="flex-1 p-3 border-2 border-black font-bold text-sm resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow disabled:bg-gray-200"
                             ></textarea>
-                            <div class="flex flex-col gap-2">
-                                <button
-                                    @click="handleSend"
-                                    :disabled="!inputMessage.trim() || isLoading"
-                                    class="px-6 py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro"
-                                >
-                                    {{ isLoading ? 'SENDING...' : 'SEND!' }}
-                                </button>
-                                <button @click="inputMessage = ''" class="px-6 py-2 bg-white border-2 border-black font-bold hover:bg-gray-100 shadow-retro text-sm">CLEAR</button>
-                            </div>
+                            <button
+                                @click="handleSend"
+                                :disabled="!inputMessage.trim() || isLoading"
+                                class="px-6 py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro"
+                            >
+                                {{ isLoading ? 'SENDING...' : 'SEND!' }}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -230,6 +226,7 @@ const { sessions, currentSessionId, currentSession, sortedSessions, isLoading, a
 
 const inputMessage = ref('')
 const showSettings = ref(false)
+const showSidebar = ref(false)
 const messagesContainer = ref<HTMLElement>()
 
 // 方法
