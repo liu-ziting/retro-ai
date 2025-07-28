@@ -6,7 +6,6 @@
         "dev": "vite",
         "build": "vite build",
         "build:check": "vue-tsc --noEmit && vite build",
-        "build:skip-check": "vite build",
         "preview": "vite preview"
     },
     "dependencies": {
