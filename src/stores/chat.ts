@@ -2,18 +2,15 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import OpenAI from 'openai'
 import type { ChatSession, Message, ApiConfig } from '@/types'
+import { DEFAULT_SYSTEM_PROMPT, SYSTEM_PROMPTS, type SystemPromptType } from '@/config/prompts'
+import { getDefaultApiConfig, validateApiConfig } from '@/utils/configUtils'
 
 export const useChatStore = defineStore('chat', () => {
     // 状态
     const sessions = ref<ChatSession[]>([])
     const currentSessionId = ref<string | null>(null)
     const isLoading = ref(false)
-    const apiConfig = ref<ApiConfig>({
-        apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || 'sk-214be43c4a364f8d9922cb389c4cd55f',
-        baseUrl: import.meta.env.VITE_DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
-        model: 'deepseek-chat',
-        temperature: 0.7
-    })
+    const apiConfig = ref<ApiConfig>(getDefaultApiConfig())
 
     // 计算属性
     const currentSession = computed(() => sessions.value.find(s => s.id === currentSessionId.value))
@@ -72,8 +69,56 @@ export const useChatStore = defineStore('chat', () => {
     }
 
     const updateApiConfig = (config: Partial<ApiConfig>) => {
+        const validation = validateApiConfig(config)
+        if (!validation.valid) {
+            console.error('配置验证失败:', validation.errors)
+            throw new Error(validation.errors.join(', '))
+        }
         apiConfig.value = { ...apiConfig.value, ...config }
         saveToStorage()
+    }
+
+    // 切换系统提示词类型
+    const updateSystemPromptType = (type: SystemPromptType) => {
+        apiConfig.value.systemPromptType = type
+        apiConfig.value.systemPrompt = SYSTEM_PROMPTS[type]
+        saveToStorage()
+    }
+
+    // 重置API配置到默认值
+    const resetApiConfig = () => {
+        apiConfig.value = getDefaultApiConfig()
+        saveToStorage()
+    }
+
+    // 重置所有配置（包括会话数据）
+    const resetAllConfig = () => {
+        // 重置API配置
+        apiConfig.value = getDefaultApiConfig()
+
+        // 清空所有会话
+        sessions.value = []
+        currentSessionId.value = null
+
+        // 清除本地存储
+        localStorage.removeItem('chat-sessions')
+        localStorage.removeItem('current-session-id')
+        localStorage.removeItem('api-config')
+
+        // 创建一个新的默认会话
+        createSession()
+    }
+
+    // 仅重置会话数据，保留API配置
+    const resetSessions = () => {
+        sessions.value = []
+        currentSessionId.value = null
+
+        localStorage.removeItem('chat-sessions')
+        localStorage.removeItem('current-session-id')
+
+        // 创建一个新的默认会话
+        createSession()
     }
 
     // 创建OpenAI客户端实例
@@ -123,7 +168,7 @@ export const useChatStore = defineStore('chat', () => {
             // 添加系统提示
             const systemMessage = {
                 role: 'system' as const,
-                content: '你是一个有用的AI助手，请用中文回答问题。'
+                content: apiConfig.value.systemPrompt || DEFAULT_SYSTEM_PROMPT
             }
 
             // 发起流式请求
@@ -220,6 +265,10 @@ export const useChatStore = defineStore('chat', () => {
         addMessage,
         sendMessage,
         updateApiConfig,
+        updateSystemPromptType,
+        resetApiConfig,
+        resetAllConfig,
+        resetSessions,
         loadFromStorage
     }
 })

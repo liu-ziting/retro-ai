@@ -18,6 +18,8 @@ export interface ApiConfig {
     baseUrl: string
     model: string
     temperature: number
+    systemPrompt: string
+    systemPromptType?: 'default' | 'coding' | 'creative' | 'academic' | 'casual'
 }
 
 export type SupportedModel = 'deepseek-chat' | 'deepseek-coder' | 'gpt-3.5-turbo' | 'gpt-4' | 'gpt-4-turbo'
