@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Chat Test</title>
+        <style>
+            .user-message {
+                background: pink;
+                text-align: right;
+                margin: 10px 0;
+                padding: 10px;
+            }
+            .ai-message {
+                background: lightblue;
+                text-align: left;
+                margin: 10px 0;
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="messages"></div>
+        <input type="text" id="input" placeholder="输入消息..." />
+        <button onclick="sendMessage()">发送</button>
+
+        <script>
+            let messages = []
+
+            function addMessage(content, role) {
+                const message = {
+                    id: Date.now() + '-' + Math.random(),
+                    content: content,
+                    role: role,
+                    timestamp: Date.now()
+                }
+                messages.push(message)
+                renderMessages()
+                return message
+            }
+
+            function renderMessages() {
+                const container = document.getElementById('messages')
+                container.innerHTML = ''
+
+                messages.forEach(msg => {
+                    const div = document.createElement('div')
+                    div.className = msg.role === 'user' ? 'user-message' : 'ai-message'
+                    div.textContent = `${msg.role}: ${msg.content}`
+                    container.appendChild(div)
+                })
+            }
+
+            function sendMessage() {
+                const input = document.getElementById('input')
+                const content = input.value.trim()
+                if (!content) return
+
+                // 添加用户消息
+                addMessage(content, 'user')
+                input.value = ''
+
+                // 模拟AI回复
+                setTimeout(() => {
+                    addMessage('这是AI的回复: ' + content, 'assistant')
+                }, 1000)
+            }
+        </script>
+    </body>
+</html>

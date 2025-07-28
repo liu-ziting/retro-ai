@@ -1,0 +1,303 @@
+<template>
+    <div class="min-h-screen bg-retro-yellow p-4 font-retro">
+        <div class="max-w-6xl mx-auto">
+            <!-- 主标题栏 -->
+            <div class="bg-retro-pink border-4 border-black shadow-retro mb-4 p-6 relative">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-4xl font-bold text-white drop-shadow-lg">
+                            AI CHAT
+                            <span class="text-retro-yellow">WIZ</span>
+                        </h1>
+                        <p class="text-white/90 text-sm mt-1 uppercase tracking-wide">TALK TO AI! GET SMART ANSWERS!</p>
+                    </div>
+                    <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">⚙️ 配置</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- 左侧：会话管理 -->
+                <div class="lg:col-span-1">
+                    <!-- 新建对话 -->
+                    <div class="bg-retro-green border-4 border-black shadow-retro mb-4 p-3">
+                        <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-3 inline-block">1. NEW CHAT</div>
+                        <button @click="createNewSession" class="w-full bg-white border-2 border-black p-4 hover:bg-gray-100 shadow-retro font-bold text-center">
+                            <div class="text-2xl mb-2">💬</div>
+                            <div>START NEW CHAT</div>
+                            <div class="text-xs text-gray-600">Click to begin conversation</div>
+                        </button>
+                    </div>
+
+                    <!-- 会话列表 -->
+                    <div class="bg-white border-4 border-black shadow-retro p-3">
+                        <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-3 inline-block">2. CHAT HISTORY</div>
+                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                            <div
+                                v-for="session in sortedSessions"
+                                :key="session.id"
+                                :class="[
+                                    'p-3 border-2 border-black cursor-pointer font-bold text-sm relative group',
+                                    session.id === currentSessionId ? 'bg-retro-yellow shadow-retro-inset' : 'bg-gray-100 hover:bg-gray-200'
+                                ]"
+                                @click="selectSession(session.id)"
+                            >
+                                <div class="truncate">{{ session.title }}</div>
+                                <div class="text-xs text-gray-600 mt-1">{{ formatTime(session.updatedAt) }}</div>
+                                <button
+                                    v-if="sessions.length > 1"
+                                    @click.stop="deleteSession(session.id)"
+                                    class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 bg-red-500 text-white text-xs px-1 rounded"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：聊天区域 -->
+                <div class="lg:col-span-2">
+                    <!-- 聊天窗口 -->
+                    <div class="bg-white border-4 border-black shadow-retro mb-4">
+                        <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-0 flex items-center justify-between">
+                            <span>3. CHAT WINDOW</span>
+                            <span class="text-xs">{{ currentSession?.title || 'No Chat Selected' }}</span>
+                        </div>
+
+                        <div
+                            ref="messagesContainer"
+                            class="h-96 overflow-y-auto p-4 bg-gray-50"
+                            style="background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 0, 0.03) 20px, rgba(0, 0, 0, 0.03) 21px)"
+                        >
+                            <!-- 欢迎消息 -->
+                            <div v-if="!currentSession?.messages.length" class="text-center py-16">
+                                <div class="text-6xl mb-4 animate-bounce-slow">🤖</div>
+                                <div class="font-bold text-lg mb-2">WAITING FOR INPUT...</div>
+                                <div class="text-sm text-gray-600">Start a conversation to see the magic!</div>
+                            </div>
+
+                            <!-- 消息列表 -->
+                            <div v-for="message in currentSession?.messages" :key="message.id" class="mb-4 animate-slide-up">
+                                <div :class="['flex gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']">
+                                    <!-- AI头像 -->
+                                    <div v-if="message.role === 'assistant'" class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-retro-blue border-2 border-black flex items-center justify-center text-white font-bold">🤖</div>
+                                    </div>
+
+                                    <!-- 消息气泡 -->
+                                    <div
+                                        :class="[
+                                            'max-w-[70%] p-3 border-2 border-black font-bold text-sm',
+                                            message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
+                                        ]"
+                                    >
+                                        <!-- 消息内容或加载动画 -->
+                                        <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
+                                            {{ message.content }}
+                                        </div>
+                                        <div
+                                            v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading"
+                                            class="flex items-center gap-1"
+                                        >
+                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
+                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                        </div>
+
+                                        <!-- 时间戳 -->
+                                        <div
+                                            v-if="message.content && message.content.trim()"
+                                            :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
+                                        >
+                                            {{ formatTime(message.timestamp) }}
+                                        </div>
+                                    </div>
+
+                                    <!-- 用户头像 -->
+                                    <div v-if="message.role === 'user'" class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-retro-green border-2 border-black flex items-center justify-center text-white font-bold">👤</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 输入区域 -->
+                    <div class="bg-retro-purple border-4 border-black shadow-retro p-4">
+                        <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-3 inline-block">4. TYPE MESSAGE</div>
+                        <div class="flex gap-3">
+                            <textarea
+                                v-model="inputMessage"
+                                @keydown.enter.prevent="handleSend"
+                                placeholder="Type your message here..."
+                                :disabled="isLoading"
+                                rows="3"
+                                class="flex-1 p-3 border-2 border-black font-bold text-sm resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow disabled:bg-gray-200"
+                            ></textarea>
+                            <div class="flex flex-col gap-2">
+                                <button
+                                    @click="handleSend"
+                                    :disabled="!inputMessage.trim() || isLoading"
+                                    class="px-6 py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro"
+                                >
+                                    {{ isLoading ? 'SENDING...' : 'SEND!' }}
+                                </button>
+                                <button @click="inputMessage = ''" class="px-6 py-2 bg-white border-2 border-black font-bold hover:bg-gray-100 shadow-retro text-sm">CLEAR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部信息栏 -->
+            <div class="bg-white border-4 border-black shadow-retro mt-4 p-2 text-center">
+                <div class="text-xs font-bold">
+                    © 2024 AI Chat Wiz | Made with ❤️ and ☕ |
+                    <span class="text-retro-blue">Powered by Vue.js</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置面板 -->
+        <div v-if="showSettings" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in p-4" @click="showSettings = false">
+            <div class="bg-white border-4 border-black shadow-retro w-full max-w-md animate-slide-up" @click.stop>
+                <div class="bg-retro-orange border-b-4 border-black p-4">
+                    <h3 class="font-bold text-white text-lg">⚙️ SETTINGS PANEL</h3>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block font-bold text-sm mb-2">🔑 API KEY:</label>
+                        <input
+                            v-model="apiConfig.apiKey"
+                            type="password"
+                            placeholder="Enter your API key here..."
+                            class="w-full p-2 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-retro-yellow"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-sm mb-2">🌐 BASE URL:</label>
+                        <input
+                            v-model="apiConfig.baseUrl"
+                            type="text"
+                            placeholder="API base URL..."
+                            class="w-full p-2 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-retro-yellow"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-sm mb-2">🤖 MODEL:</label>
+                        <input
+                            v-model="apiConfig.model"
+                            type="text"
+                            placeholder="输入模型名称，如：deepseek-chat"
+                            class="w-full p-2 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-retro-yellow"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-sm mb-2">🌡️ TEMPERATURE:</label>
+                        <input
+                            v-model.number="apiConfig.temperature"
+                            type="number"
+                            min="0"
+                            max="2"
+                            step="0.1"
+                            placeholder="0.7"
+                            class="w-full p-2 border-2 border-black font-bold text-sm focus:outline-none focus:ring-2 focus:ring-retro-yellow"
+                        />
+                        <div class="text-xs text-gray-600 mt-1">控制回复的随机性 (0-2，推荐0.7)</div>
+                    </div>
+                </div>
+
+                <div class="border-t-4 border-black p-4 flex gap-3 justify-end">
+                    <button @click="showSettings = false" class="px-4 py-2 bg-gray-300 border-2 border-black font-bold hover:bg-gray-400 shadow-retro">CANCEL</button>
+                    <button @click="saveSettings" class="px-4 py-2 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 shadow-retro">SAVE!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted, nextTick, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useChatStore } from './stores/chat'
+
+const chatStore = useChatStore()
+const { sessions, currentSessionId, currentSession, sortedSessions, isLoading, apiConfig } = storeToRefs(chatStore)
+
+const inputMessage = ref('')
+const showSettings = ref(false)
+const messagesContainer = ref<HTMLElement>()
+
+// 方法
+const createNewSession = () => {
+    chatStore.createSession()
+}
+
+const selectSession = (sessionId: string) => {
+    chatStore.selectSession(sessionId)
+}
+
+const deleteSession = (sessionId: string) => {
+    chatStore.deleteSession(sessionId)
+}
+
+const handleSend = async () => {
+    if (!inputMessage.value.trim() || isLoading.value) return
+
+    const message = inputMessage.value.trim()
+    inputMessage.value = ''
+
+    await chatStore.sendMessage(message)
+    scrollToBottom()
+}
+
+const saveSettings = () => {
+    chatStore.updateApiConfig(apiConfig.value)
+    showSettings.value = false
+}
+
+const formatTime = (timestamp: number) => {
+    const now = Date.now()
+    const diff = now - timestamp
+
+    if (diff < 60000) return 'NOW'
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}M AGO`
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}H AGO`
+
+    return new Date(timestamp)
+        .toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        .toUpperCase()
+}
+
+const scrollToBottom = () => {
+    nextTick(() => {
+        if (messagesContainer.value) {
+            messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+        }
+    })
+}
+
+// 监听消息变化，自动滚动到底部
+watch(
+    () => currentSession.value?.messages,
+    () => {
+        scrollToBottom()
+    },
+    { deep: true }
+)
+
+// 初始化
+onMounted(() => {
+    chatStore.loadFromStorage()
+    scrollToBottom()
+})
+</script>
