@@ -263,7 +263,7 @@
             <!-- 底部信息栏 (仅桌面端显示) -->
             <div class="hidden lg:block bg-white border-4 border-black shadow-retro mt-4 p-2 text-center">
                 <div class="text-xs font-bold">
-                    © 2025 DeepFuck | Made with ❤️ and ☕ |
+                    © 2025 RetroBot | Made with ❤️ and ☕ |
                     <a href="https://github.com/liu-ziting/" target="_blank" class="text-retro-blue hover:underline">Powered by Liuziting</a>
                 </div>
             </div>
