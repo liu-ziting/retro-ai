@@ -184,8 +184,7 @@ export const useChatStore = defineStore('chat', () => {
                 model: apiConfig.value.model,
                 messages: finalMessages,
                 stream: true,
-                temperature: apiConfig.value.temperature,
-                max_tokens: 2000
+                temperature: apiConfig.value.temperature
             })
 
             let fullResponse = ''
