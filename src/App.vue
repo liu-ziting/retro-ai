@@ -174,8 +174,8 @@
                             <!-- 欢迎消息 -->
                             <div v-if="!currentSession?.messages.length" class="text-center py-8 lg:py-16">
                                 <div class="text-4xl lg:text-6xl mb-4 animate-bounce-slow">🤖</div>
-                                <div class="font-bold text-base lg:text-lg mb-2">等待输入中...</div>
-                                <div class="text-xs lg:text-sm text-gray-600 px-4">开始对话，体验AI的魅力！</div>
+                                <div class="font-bold text-base lg:text-lg mb-2">WAITING FOR INPUT...</div>
+                                <div class="text-xs lg:text-sm text-gray-600 px-4">Start a conversation to see the magic!</div>
                             </div>
 
                             <!-- 消息列表 -->
