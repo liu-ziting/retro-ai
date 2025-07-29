@@ -33,9 +33,9 @@
                     <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">⚙️ 配置</button>
                 </div>
             </div>
-            <div class="flex flex-col lg:grid lg:grid-cols-4 lg:gap-4 flex-1 lg:flex-none">
+            <div class="flex flex-col lg:grid lg:grid-cols-4 lg:gap-4 flex-1 lg:flex-none" :class="{ hidden: isFullscreen }">
                 <!-- 侧边栏抽屉 (移动端) -->
-                <div v-if="showSidebar" class="lg:hidden fixed inset-0 bg-black/50 z-40" @click="showSidebar = false">
+                <div v-if="showSidebar && !isFullscreen" class="lg:hidden fixed inset-0 bg-black/50 z-40" @click="showSidebar = false">
                     <div class="w-80 max-w-[85vw] h-full bg-retro-yellow border-r-4 border-black shadow-retro p-4 overflow-y-auto" @click.stop>
                         <!-- 抽屉头部 -->
                         <div class="flex items-center justify-between mb-4">
@@ -91,7 +91,7 @@
                 </div>
 
                 <!-- 桌面端侧边栏 -->
-                <div class="hidden lg:block lg:col-span-1">
+                <div class="hidden lg:block lg:col-span-1" :class="{ 'lg:hidden': isFullscreen }">
                     <!-- 新建对话 -->
                     <div class="bg-retro-green border-4 border-black shadow-retro mb-4 p-2">
                         <div class="bg-black text-white px-2 py-1 text-xs font-bold mb-2 inline-block">1. NEW CHAT</div>
@@ -139,13 +139,22 @@
                 </div>
 
                 <!-- 主要聊天区域 -->
-                <div class="w-full lg:col-span-3 flex flex-col flex-1 lg:flex-none lg:h-auto">
+                <div :class="['w-full flex flex-col flex-1 lg:flex-none lg:h-auto', isFullscreen ? 'fixed inset-0 z-50 bg-white lg:col-span-4' : 'lg:col-span-3']">
                     <!-- 聊天窗口 -->
                     <div class="bg-white lg:border-4 border-black lg:shadow-retro lg:mb-4 flex-1 lg:flex-none flex flex-col min-h-0">
                         <!-- 桌面端标题栏 -->
                         <div class="hidden lg:flex bg-black text-white px-2 py-1 text-sm font-bold mb-0 items-center justify-between">
                             <span>3. CHAT WINDOW</span>
-                            <span class="text-xs">{{ currentSession?.title || 'No Chat Selected' }}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs">{{ currentSession?.title || 'No Chat Selected' }}</span>
+                                <button
+                                    @click="toggleFullscreen"
+                                    class="bg-white text-black px-2 py-1 text-xs font-bold hover:bg-gray-200 border border-gray-300 rounded"
+                                    :title="isFullscreen ? '退出全屏' : '全屏'"
+                                >
+                                    {{ isFullscreen ? '🗗' : '🗖' }}
+                                </button>
+                            </div>
                         </div>
 
                         <!-- 移动端对话标题栏 -->
@@ -168,7 +177,10 @@
 
                         <div
                             ref="messagesContainer"
-                            class="overflow-y-auto p-2 lg:p-4 bg-gray-50 custom-scrollbar h-[calc(100vh-115px)] lg:h-96 pb-20 lg:pb-4"
+                            :class="[
+                                'overflow-y-auto p-2 lg:p-4 bg-gray-50 custom-scrollbar pb-20 lg:pb-4',
+                                isFullscreen ? 'h-[calc(100vh-200px)]' : 'h-[calc(100vh-115px)] lg:h-96'
+                            ]"
                             style="background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 0, 0.03) 20px, rgba(0, 0, 0, 0.03) 21px)"
                         >
                             <!-- 欢迎消息 -->
@@ -252,6 +264,115 @@
                                 @click="handleSend"
                                 :disabled="!inputMessage.trim() || isLoading"
                                 class="px-3 lg:px-6 py-2 lg:py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro text-sm"
+                            >
+                                {{ isLoading ? '发送中...' : '发送' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 全屏聊天区域 -->
+            <div v-if="isFullscreen" class="fixed inset-0 z-50 bg-retro-yellow flex flex-col">
+                <!-- 全屏聊天窗口 -->
+                <div class="bg-white border-4 border-black shadow-retro m-4 flex-1 flex flex-col min-h-0">
+                    <!-- 全屏标题栏 -->
+                    <div class="bg-black text-white px-4 py-2 text-sm font-bold flex items-center justify-between">
+                        <span>🗖 全屏聊天模式</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs">{{ currentSession?.title || 'No Chat Selected' }}</span>
+                            <button
+                                @click="toggleFullscreen"
+                                class="bg-white text-black px-2 py-1 text-xs font-bold hover:bg-gray-200 border border-gray-300 rounded"
+                                title="退出全屏"
+                            >
+                                🗗
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 模型和预设信息栏 -->
+                    <div class="bg-retro-blue border-b-2 border-black px-3 py-2 flex items-center justify-between text-white text-xs font-bold">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-black px-2 py-1 rounded text-xs">🤖 {{ apiConfig.model || 'No Model' }}</span>
+                            <span class="bg-black px-2 py-1 rounded text-xs">{{ getCurrentPresetTitle() }}</span>
+                        </div>
+                        <div class="text-xs opacity-75">🌡️ {{ apiConfig.temperature || 0.7 }}</div>
+                    </div>
+
+                    <!-- 全屏消息区域 -->
+                    <div
+                        ref="fullscreenMessagesContainer"
+                        class="overflow-y-auto p-4 bg-gray-50 custom-scrollbar flex-1 min-h-0"
+                        style="background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 0, 0.03) 20px, rgba(0, 0, 0, 0.03) 21px)"
+                    >
+                        <!-- 欢迎消息 -->
+                        <div v-if="!currentSession?.messages.length" class="text-center py-16">
+                            <div class="text-6xl mb-4 animate-bounce-slow">🤖</div>
+                            <div class="font-bold text-lg mb-2">WAITING FOR INPUT...</div>
+                            <div class="text-sm text-gray-600 px-4">Start a conversation to see the magic!</div>
+                        </div>
+
+                        <!-- 消息列表 -->
+                        <div v-for="message in currentSession?.messages" :key="message.id" class="mb-4 animate-slide-up">
+                            <div :class="['flex gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']">
+                                <!-- AI头像 -->
+                                <div v-if="message.role === 'assistant'" class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-retro-blue border-2 border-black flex items-center justify-center text-white font-bold text-sm">🤖</div>
+                                </div>
+
+                                <!-- 消息气泡 -->
+                                <div
+                                    :class="[
+                                        'max-w-[70%] p-3 border-2 border-black font-bold text-sm',
+                                        message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
+                                    ]"
+                                >
+                                    <!-- 消息内容或加载动画 -->
+                                    <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
+                                        {{ message.content }}
+                                    </div>
+                                    <div
+                                        v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading"
+                                        class="flex items-center gap-1"
+                                    >
+                                        <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
+                                        <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                        <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                    </div>
+
+                                    <!-- 时间戳 -->
+                                    <div
+                                        v-if="message.content && message.content.trim()"
+                                        :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
+                                    >
+                                        {{ formatTime(message.timestamp) }}
+                                    </div>
+                                </div>
+
+                                <!-- 用户头像 -->
+                                <div v-if="message.role === 'user'" class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-retro-green border-2 border-black flex items-center justify-center text-white font-bold text-sm">👤</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 全屏输入区域 -->
+                    <div class="bg-retro-purple border-t-4 border-black p-4 flex-shrink-0">
+                        <div class="flex gap-3">
+                            <textarea
+                                v-model="inputMessage"
+                                @keydown.enter.prevent="handleSend"
+                                placeholder="输入消息..."
+                                :disabled="isLoading"
+                                rows="2"
+                                class="flex-1 p-3 border-2 border-black font-bold text-sm resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow disabled:bg-gray-200"
+                            ></textarea>
+                            <button
+                                @click="handleSend"
+                                :disabled="!inputMessage.trim() || isLoading"
+                                class="px-6 py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro text-sm"
                             >
                                 {{ isLoading ? '发送中...' : '发送' }}
                             </button>
@@ -431,8 +552,10 @@ const inputMessage = ref('')
 const showSettings = ref(false)
 const showSidebar = ref(false)
 const messagesContainer = ref<HTMLElement>()
+const fullscreenMessagesContainer = ref<HTMLElement>()
 const showConfirmDialog = ref(false)
 const confirmAction = ref<() => void>(() => {})
+const isFullscreen = ref(false)
 
 // 方法
 const createNewSession = () => {
@@ -539,6 +662,11 @@ const resetAllConfig = () => {
     })
 }
 
+// 全屏功能
+const toggleFullscreen = () => {
+    isFullscreen.value = !isFullscreen.value
+}
+
 const formatTime = (timestamp: number) => {
     const now = Date.now()
     const diff = now - timestamp
@@ -559,8 +687,9 @@ const formatTime = (timestamp: number) => {
 
 const scrollToBottom = () => {
     nextTick(() => {
-        if (messagesContainer.value) {
-            messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+        const container = isFullscreen.value ? fullscreenMessagesContainer.value : messagesContainer.value
+        if (container) {
+            container.scrollTop = container.scrollHeight
         }
     })
 }
