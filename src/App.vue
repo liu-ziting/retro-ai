@@ -6,8 +6,8 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-4xl font-bold text-white drop-shadow-lg">
-                            DEEP
-                            <span class="text-retro-yellow">FUCK</span>
+                            Retro
+                            <span class="text-retro-yellow">Bot</span>
                         </h1>
                         <p class="text-white/90 text-sm mt-1 uppercase tracking-wide">DEEP CONVERSATIONS! SMART INSIGHTS!</p>
                     </div>
@@ -71,6 +71,15 @@
                         <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-0 flex items-center justify-between">
                             <span>3. CHAT WINDOW</span>
                             <span class="text-xs">{{ currentSession?.title || 'No Chat Selected' }}</span>
+                        </div>
+
+                        <!-- 模型和预设信息栏 -->
+                        <div class="bg-retro-blue border-b-2 border-black px-3 py-2 flex items-center justify-between text-white text-xs font-bold">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-black px-2 py-1 rounded">🤖 {{ apiConfig.model || 'No Model' }}</span>
+                                <span class="bg-black px-2 py-1 rounded">{{ getCurrentPresetTitle() }}</span>
+                            </div>
+                            <div class="text-xs opacity-75">🌡️ {{ apiConfig.temperature || 0.7 }}</div>
                         </div>
 
                         <div
@@ -194,9 +203,10 @@
                                         <input
                                             v-model="apiConfig.baseUrl"
                                             type="text"
-                                            placeholder="API base URL..."
+                                            placeholder="请填写 chat/completions 之前的接口地址，如：https://api.deepseek.com"
                                             class="w-full p-2 border-2 border-black font-bold text-xs focus:outline-none focus:ring-2 focus:ring-retro-yellow"
                                         />
+                                        <div class="text-xs text-gray-600 mt-1">请填写 chat/completions 之前的接口地址</div>
                                     </div>
 
                                     <div>
@@ -227,13 +237,51 @@
 
                             <div class="bg-gray-50 p-3 border-2 border-gray-200 rounded">
                                 <h4 class="font-bold text-sm mb-3 text-gray-700">💬 系统提示词</h4>
+
+                                <!-- 预设选择按钮 -->
+                                <div class="mb-3">
+                                    <div class="text-xs font-bold mb-2 text-gray-700">📋 快速预设：</div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button
+                                            @click="selectPromptPreset('default')"
+                                            class="px-2 py-1 bg-retro-pink border-2 border-black font-bold text-white text-xs hover:bg-pink-400 shadow-retro"
+                                        >
+                                            🔥 Fuck
+                                        </button>
+                                        <button
+                                            @click="selectPromptPreset('coding')"
+                                            class="px-2 py-1 bg-retro-blue border-2 border-black font-bold text-white text-xs hover:bg-blue-400 shadow-retro"
+                                        >
+                                            💻 编程
+                                        </button>
+                                        <button
+                                            @click="selectPromptPreset('creative')"
+                                            class="px-2 py-1 bg-retro-purple border-2 border-black font-bold text-white text-xs hover:bg-purple-400 shadow-retro"
+                                        >
+                                            🎨 创意
+                                        </button>
+                                        <button
+                                            @click="selectPromptPreset('academic')"
+                                            class="px-2 py-1 bg-retro-green border-2 border-black font-bold text-white text-xs hover:bg-green-400 shadow-retro"
+                                        >
+                                            📚 学术
+                                        </button>
+                                        <button
+                                            @click="selectPromptPreset('casual')"
+                                            class="px-2 py-1 bg-retro-orange border-2 border-black font-bold text-white text-xs hover:bg-orange-400 shadow-retro col-span-2"
+                                        >
+                                            😊 随和
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <textarea
                                     v-model="apiConfig.systemPrompt"
                                     placeholder="输入系统提示词，如：你是一个有用的AI助手..."
                                     rows="4"
                                     class="w-full p-2 border-2 border-black font-bold text-xs resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow"
                                 ></textarea>
-                                <div class="text-xs text-gray-600 mt-1">设置AI的角色和行为方式</div>
+                                <div class="text-xs text-gray-600 mt-1">设置AI的角色和行为方式，或点击上方预设快速选择</div>
                             </div>
                         </div>
                     </div>
@@ -280,6 +328,7 @@
 import { ref, onMounted, nextTick, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useChatStore } from './stores/chat'
+import { SYSTEM_PROMPTS } from './config/prompts'
 
 const chatStore = useChatStore()
 const { sessions, currentSessionId, currentSession, sortedSessions, isLoading, apiConfig } = storeToRefs(chatStore)
@@ -317,6 +366,40 @@ const handleSend = async () => {
 const saveSettings = () => {
     chatStore.updateApiConfig(apiConfig.value)
     showSettings.value = false
+    // 保存设置后自动创建新对话，确保新设置生效
+    chatStore.createSession()
+}
+
+// 选择提示词预设
+const selectPromptPreset = (presetKey: keyof typeof SYSTEM_PROMPTS) => {
+    apiConfig.value.systemPrompt = SYSTEM_PROMPTS[presetKey]
+}
+
+// 获取当前预设标题
+const getCurrentPresetTitle = () => {
+    const currentPrompt = apiConfig.value.systemPrompt
+    if (!currentPrompt) return '自定义'
+
+    // 检查是否匹配预设
+    for (const [key, value] of Object.entries(SYSTEM_PROMPTS)) {
+        if (value === currentPrompt) {
+            switch (key) {
+                case 'default':
+                    return '🔥 Fuck'
+                case 'coding':
+                    return '💻 编程'
+                case 'creative':
+                    return '🎨 创意'
+                case 'academic':
+                    return '📚 学术'
+                case 'casual':
+                    return '😊 随和'
+                default:
+                    return '自定义'
+            }
+        }
+    }
+    return '自定义'
 }
 
 // 确认对话框

@@ -165,16 +165,24 @@ export const useChatStore = defineStore('chat', () => {
                     content: msg.content
                 }))
 
-            // 添加系统提示
-            const systemMessage = {
-                role: 'system' as const,
-                content: apiConfig.value.systemPrompt || DEFAULT_SYSTEM_PROMPT
+            // 构建最终消息列表 - 严格按照用户配置
+            const finalMessages = []
+
+            // 只有当系统提示词不为空时才添加系统消息
+            if (apiConfig.value.systemPrompt && apiConfig.value.systemPrompt.trim() !== '') {
+                finalMessages.push({
+                    role: 'system' as const,
+                    content: apiConfig.value.systemPrompt
+                })
             }
+
+            // 添加对话历史
+            finalMessages.push(...messages)
 
             // 发起流式请求
             const stream = await openai.chat.completions.create({
                 model: apiConfig.value.model,
-                messages: [systemMessage, ...messages],
+                messages: finalMessages,
                 stream: true,
                 temperature: apiConfig.value.temperature,
                 max_tokens: 2000

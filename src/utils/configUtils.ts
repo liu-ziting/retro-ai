@@ -6,9 +6,9 @@ import { DEFAULT_SYSTEM_PROMPT } from '@/config/prompts'
  */
 export function getDefaultApiConfig(): ApiConfig {
     return {
-        apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY || 'sk-214be43c4a364f8d9922cb389c4cd55f',
-        baseUrl: import.meta.env.VITE_DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
-        model: 'deepseek-chat',
+        apiKey: 'a835b9f6866d48ec956d341418df8a50.NuhlKYn58EkCb5iP',
+        baseUrl: 'https://open.bigmodel.cn/api/paas/v4/',
+        model: 'glm-4-flash-250414',
         temperature: 0.7,
         systemPrompt: DEFAULT_SYSTEM_PROMPT,
         systemPromptType: 'default'
@@ -33,9 +33,7 @@ export function validateApiConfig(config: Partial<ApiConfig>): { valid: boolean;
         errors.push('Temperature 必须在 0-2 之间')
     }
 
-    if (config.systemPrompt && config.systemPrompt.trim() === '') {
-        errors.push('系统提示词不能为空')
-    }
+    // 允许系统提示词为空，用户可以选择不使用系统提示词
 
     return {
         valid: errors.length === 0,

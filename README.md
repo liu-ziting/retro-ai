@@ -54,8 +54,6 @@ retro-ai/
 │   ├── App.vue            # 主应用组件
 │   ├── main.ts            # 应用入口
 │   ├── style.css          # 全局样式
-│   └── env.d.ts           # 环境变量类型声明
-├── .env.example           # 环境变量示例
 ├── index.html             # HTML模板
 ├── package.json           # 项目依赖
 ├── tailwind.config.js     # Tailwind配置
@@ -79,21 +77,6 @@ npm install
 yarn install
 # 或
 pnpm install
-```
-
-### 环境配置
-
-1. 复制环境变量文件：
-
-```bash
-cp .env.example .env
-```
-
-2. 编辑 `.env` 文件，填入你的 API 配置：
-
-```env
-VITE_DEEPSEEK_API_KEY=your_deepseek_api_key_here
-VITE_DEEPSEEK_BASE_URL=https://api.deepseek.com
 ```
 
 ### 开发模式
