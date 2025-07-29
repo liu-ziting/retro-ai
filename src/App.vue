@@ -1,8 +1,27 @@
 <template>
-    <div class="min-h-screen bg-retro-yellow p-4 font-retro">
-        <div class="max-w-6xl mx-auto">
-            <!-- 主标题栏 -->
-            <div class="bg-retro-pink border-4 border-black shadow-retro mb-4 p-6 relative">
+    <div class="h-screen lg:h-auto bg-retro-yellow font-retro relative flex flex-col lg:block lg:min-h-screen">
+        <!-- 移动端顶部导航栏 -->
+        <div class="lg:hidden bg-retro-pink p-2 flex-shrink-0 relative z-30">
+            <div class="flex items-center justify-between">
+                <button
+                    @click="showSidebar = !showSidebar"
+                    class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro flex items-center gap-1"
+                >
+                    <span class="text-base">☰</span>
+                </button>
+                <div class="text-center">
+                    <h1 class="text-xl font-bold text-white drop-shadow-lg">Retro<span class="text-retro-yellow">Bot</span></h1>
+                </div>
+                <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro">
+                    <span class="text-base">⚙️</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- PC端容器 -->
+        <div class="w-full lg:max-w-6xl lg:mx-auto p-0 lg:p-4 flex-1 lg:flex-none flex flex-col lg:block">
+            <!-- 桌面端标题栏 -->
+            <div class="hidden lg:block bg-retro-pink border-4 border-black shadow-retro mb-4 p-6 relative">
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-4xl font-bold text-white drop-shadow-lg">
@@ -14,10 +33,65 @@
                     <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">⚙️ 配置</button>
                 </div>
             </div>
+            <div class="flex flex-col lg:grid lg:grid-cols-4 lg:gap-4 flex-1 lg:flex-none">
+                <!-- 侧边栏抽屉 (移动端) -->
+                <div v-if="showSidebar" class="lg:hidden fixed inset-0 bg-black/50 z-40" @click="showSidebar = false">
+                    <div class="w-80 max-w-[85vw] h-full bg-retro-yellow border-r-4 border-black shadow-retro p-4 overflow-y-auto" @click.stop>
+                        <!-- 抽屉头部 -->
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-bold">菜单</h2>
+                            <button @click="showSidebar = false" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro">✕</button>
+                        </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                <!-- 左侧：会话管理 -->
-                <div class="lg:col-span-1">
+                        <!-- 新建对话 -->
+                        <button
+                            @click="createNewSessionAndCloseSidebar"
+                            class="w-full bg-white border-2 border-black p-2 hover:bg-gray-100 shadow-retro font-bold text-center text-sm"
+                        >
+                            <div class="text-base mb-1">💬</div>
+                            <div>新建对话</div>
+                        </button>
+
+                        <!-- 会话列表 -->
+                        <div class="bg-white border-2 border-black shadow-retro p-3">
+                            <div class="bg-black text-white px-2 py-1 text-xs font-bold mb-3 inline-block">对话历史</div>
+                            <div class="space-y-2 max-h-96 overflow-y-auto">
+                                <div
+                                    v-for="session in sortedSessions"
+                                    :key="session.id"
+                                    :class="[
+                                        'p-2 border-2 border-black cursor-pointer font-bold text-xs relative group',
+                                        session.id === currentSessionId ? 'bg-retro-yellow shadow-retro-inset' : 'bg-gray-100 hover:bg-gray-200'
+                                    ]"
+                                    @click="selectSessionAndCloseSidebar(session.id)"
+                                >
+                                    <div class="truncate">{{ session.title }}</div>
+                                    <div class="text-xs text-gray-600 mt-1">{{ formatTime(session.updatedAt) }}</div>
+                                    <button
+                                        v-if="sessions.length > 1"
+                                        @click.stop="deleteSession(session.id)"
+                                        class="absolute top-1 right-1 opacity-100 bg-red-500 text-white text-xs px-1 rounded"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 清空对话按钮 -->
+                            <div class="mt-3 pt-3 border-t-2 border-gray-200">
+                                <button
+                                    @click="resetSessions"
+                                    class="w-full px-2 py-2 bg-retro-orange border-2 border-black font-bold text-white hover:bg-orange-400 shadow-retro text-xs flex items-center justify-center gap-2"
+                                >
+                                    <span>🗑️</span> 清空记录
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 桌面端侧边栏 -->
+                <div class="hidden lg:block lg:col-span-1">
                     <!-- 新建对话 -->
                     <div class="bg-retro-green border-4 border-black shadow-retro mb-4 p-2">
                         <div class="bg-black text-white px-2 py-1 text-xs font-bold mb-2 inline-block">1. NEW CHAT</div>
@@ -64,48 +138,62 @@
                     </div>
                 </div>
 
-                <!-- 右侧：聊天区域 -->
-                <div class="lg:col-span-3">
+                <!-- 主要聊天区域 -->
+                <div class="w-full lg:col-span-3 flex flex-col flex-1 lg:flex-none lg:h-auto">
                     <!-- 聊天窗口 -->
-                    <div class="bg-white border-4 border-black shadow-retro mb-4">
-                        <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-0 flex items-center justify-between">
+                    <div class="bg-white lg:border-4 border-black lg:shadow-retro lg:mb-4 flex-1 lg:flex-none flex flex-col min-h-0">
+                        <!-- 桌面端标题栏 -->
+                        <div class="hidden lg:flex bg-black text-white px-2 py-1 text-sm font-bold mb-0 items-center justify-between">
                             <span>3. CHAT WINDOW</span>
                             <span class="text-xs">{{ currentSession?.title || 'No Chat Selected' }}</span>
                         </div>
 
+                        <!-- 移动端对话标题栏 -->
+                        <!-- <div class="lg:hidden bg-gray-100 px-2 py-1 text-center flex-shrink-0">
+                            <div class="text-xs font-bold text-gray-700 truncate">
+                                {{ currentSession?.title || '新对话' }}
+                            </div>
+                        </div> -->
+
                         <!-- 模型和预设信息栏 -->
-                        <div class="bg-retro-blue border-b-2 border-black px-3 py-2 flex items-center justify-between text-white text-xs font-bold">
-                            <div class="flex items-center gap-3">
-                                <span class="bg-black px-2 py-1 rounded">🤖 {{ apiConfig.model || 'No Model' }}</span>
-                                <span class="bg-black px-2 py-1 rounded">{{ getCurrentPresetTitle() }}</span>
+                        <div
+                            class="bg-retro-blue lg:border-b-2 border-black px-2 py-1 lg:px-3 lg:py-2 flex items-center justify-between text-white text-xs font-bold flex-shrink-0"
+                        >
+                            <div class="flex items-center gap-2 lg:gap-3">
+                                <span class="bg-black px-2 py-1 rounded text-xs">🤖 {{ apiConfig.model || 'No Model' }}</span>
+                                <span class="bg-black px-2 py-1 rounded text-xs hidden sm:inline">{{ getCurrentPresetTitle() }}</span>
                             </div>
                             <div class="text-xs opacity-75">🌡️ {{ apiConfig.temperature || 0.7 }}</div>
                         </div>
 
                         <div
                             ref="messagesContainer"
-                            class="h-96 overflow-y-auto p-4 bg-gray-50"
+                            class="overflow-y-auto p-2 lg:p-4 bg-gray-50 custom-scrollbar h-[calc(100vh-115px)] lg:h-96 pb-20 lg:pb-4"
                             style="background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 0, 0.03) 20px, rgba(0, 0, 0, 0.03) 21px)"
                         >
                             <!-- 欢迎消息 -->
-                            <div v-if="!currentSession?.messages.length" class="text-center py-16">
-                                <div class="text-6xl mb-4 animate-bounce-slow">🤖</div>
-                                <div class="font-bold text-lg mb-2">WAITING FOR INPUT...</div>
-                                <div class="text-sm text-gray-600">Start a conversation to see the magic!</div>
+                            <div v-if="!currentSession?.messages.length" class="text-center py-8 lg:py-16">
+                                <div class="text-4xl lg:text-6xl mb-4 animate-bounce-slow">🤖</div>
+                                <div class="font-bold text-base lg:text-lg mb-2">等待输入中...</div>
+                                <div class="text-xs lg:text-sm text-gray-600 px-4">开始对话，体验AI的魅力！</div>
                             </div>
 
                             <!-- 消息列表 -->
-                            <div v-for="message in currentSession?.messages" :key="message.id" class="mb-4 animate-slide-up">
-                                <div :class="['flex gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']">
+                            <div v-for="message in currentSession?.messages" :key="message.id" class="mb-3 lg:mb-4 animate-slide-up">
+                                <div :class="['flex gap-2 lg:gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']">
                                     <!-- AI头像 -->
                                     <div v-if="message.role === 'assistant'" class="flex-shrink-0">
-                                        <div class="w-8 h-8 bg-retro-blue border-2 border-black flex items-center justify-center text-white font-bold">🤖</div>
+                                        <div
+                                            class="w-6 h-6 lg:w-8 lg:h-8 bg-retro-blue border-2 border-black flex items-center justify-center text-white font-bold text-xs lg:text-sm"
+                                        >
+                                            🤖
+                                        </div>
                                     </div>
 
                                     <!-- 消息气泡 -->
                                     <div
                                         :class="[
-                                            'max-w-[70%] p-3 border-2 border-black font-bold text-sm',
+                                            'max-w-[85%] lg:max-w-[70%] p-2 lg:p-3 border-2 border-black font-bold text-xs lg:text-sm',
                                             message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
                                         ]"
                                     >
@@ -133,7 +221,11 @@
 
                                     <!-- 用户头像 -->
                                     <div v-if="message.role === 'user'" class="flex-shrink-0">
-                                        <div class="w-8 h-8 bg-retro-green border-2 border-black flex items-center justify-center text-white font-bold">👤</div>
+                                        <div
+                                            class="w-6 h-6 lg:w-8 lg:h-8 bg-retro-green border-2 border-black flex items-center justify-center text-white font-bold text-xs lg:text-sm"
+                                        >
+                                            👤
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -141,31 +233,35 @@
                     </div>
 
                     <!-- 输入区域 -->
-                    <div class="bg-retro-purple border-4 border-black shadow-retro p-4">
-                        <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-3 inline-block">4. TYPE MESSAGE</div>
-                        <div class="flex gap-3">
+                    <div
+                        class="bg-retro-purple lg:border-4 border-black lg:shadow-retro p-2 lg:p-4 border-t-2 lg:border-t-0 flex-shrink-0 lg:relative fixed lg:static bottom-0 left-0 right-0 lg:bottom-auto lg:left-auto lg:right-auto z-20"
+                    >
+                        <div class="hidden lg:inline-block bg-black text-white px-2 py-1 text-sm font-bold mb-3">4. TYPE MESSAGE</div>
+                        <div class="flex gap-2 lg:gap-3">
+                            <!-- 移动端新建对话快捷按钮 -->
+
                             <textarea
                                 v-model="inputMessage"
                                 @keydown.enter.prevent="handleSend"
-                                placeholder="Type your message here..."
+                                placeholder="输入消息..."
                                 :disabled="isLoading"
-                                rows="3"
-                                class="flex-1 p-3 border-2 border-black font-bold text-sm resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow disabled:bg-gray-200"
+                                rows="2"
+                                class="flex-1 p-2 lg:p-3 border-2 border-black font-bold text-sm resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow disabled:bg-gray-200"
                             ></textarea>
                             <button
                                 @click="handleSend"
                                 :disabled="!inputMessage.trim() || isLoading"
-                                class="px-6 py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro"
+                                class="px-3 lg:px-6 py-2 lg:py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro text-sm"
                             >
-                                {{ isLoading ? 'SENDING...' : 'SEND!' }}
+                                {{ isLoading ? '发送中...' : '发送' }}
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 底部信息栏 -->
-            <div class="bg-white border-4 border-black shadow-retro mt-4 p-2 text-center">
+            <!-- 底部信息栏 (仅桌面端显示) -->
+            <div class="hidden lg:block bg-white border-4 border-black shadow-retro mt-4 p-2 text-center">
                 <div class="text-xs font-bold">
                     © 2025 DeepFuck | Made with ❤️ and ☕ |
                     <a href="https://github.com/liu-ziting/" target="_blank" class="text-retro-blue hover:underline">Powered by Liuziting</a>
@@ -176,8 +272,9 @@
         <!-- 设置面板 -->
         <div v-if="showSettings" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in p-4" @click="showSettings = false">
             <div class="bg-white border-4 border-black shadow-retro w-full max-w-2xl max-h-[90vh] flex flex-col animate-slide-up" @click.stop>
-                <div class="bg-retro-orange border-b-4 border-black p-4 flex-shrink-0">
+                <div class="bg-retro-orange border-b-4 border-black p-4 flex-shrink-0 flex items-center justify-between">
                     <h3 class="font-bold text-white text-lg">⚙️ SETTINGS PANEL</h3>
+                    <button @click="showSettings = false" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro text-black">✕</button>
                 </div>
 
                 <!-- 可滚动内容区域 -->
@@ -292,12 +389,9 @@
                     <button @click="resetApiConfig" class="px-4 py-2 bg-retro-blue border-2 border-black font-bold text-white hover:bg-blue-400 shadow-retro text-sm">
                         🔧 重置API配置
                     </button>
-                    <div class="flex gap-3">
-                        <button @click="showSettings = false" class="px-6 py-2 bg-gray-300 border-2 border-black font-bold hover:bg-gray-400 shadow-retro text-sm">取消</button>
-                        <button @click="saveSettings" class="px-6 py-2 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 shadow-retro text-sm">
-                            保存设置
-                        </button>
-                    </div>
+                    <button @click="saveSettings" class="px-6 py-2 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 shadow-retro text-sm">
+                        保存设置
+                    </button>
                 </div>
             </div>
         </div>
@@ -345,8 +439,18 @@ const createNewSession = () => {
     chatStore.createSession()
 }
 
+const createNewSessionAndCloseSidebar = () => {
+    chatStore.createSession()
+    showSidebar.value = false
+}
+
 const selectSession = (sessionId: string) => {
     chatStore.selectSession(sessionId)
+}
+
+const selectSessionAndCloseSidebar = (sessionId: string) => {
+    chatStore.selectSession(sessionId)
+    showSidebar.value = false
 }
 
 const deleteSession = (sessionId: string) => {

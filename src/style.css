@@ -35,3 +35,55 @@
 .typing-dot:nth-child(3) {
     animation-delay: 0s;
 }
+
+/* 移动端优化 */
+@media (max-width: 1024px) {
+    /* 防止移动端缩放 */
+    html {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+    }
+
+    /* 优化触摸体验 */
+    button,
+    .cursor-pointer {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    /* 抽屉动画 */
+    .drawer-enter-active,
+    .drawer-leave-active {
+        transition: transform 0.3s ease;
+    }
+
+    .drawer-enter-from {
+        transform: translateX(-100%);
+    }
+
+    .drawer-leave-to {
+        transform: translateX(-100%);
+    }
+
+    /* 确保移动端全屏布局 */
+    body {
+        overflow: hidden;
+    }
+
+    #app {
+        height: 100vh;
+        overflow: hidden;
+    }
+}
+
+/* 确保全屏高度 */
+html,
+body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+#app {
+    height: 100vh;
+    min-height: 100vh;
+}
