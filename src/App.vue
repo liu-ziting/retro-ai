@@ -55,7 +55,7 @@
                         <!-- 会话列表 -->
                         <div class="bg-white border-2 border-black shadow-retro p-3">
                             <div class="bg-black text-white px-2 py-1 text-xs font-bold mb-3 inline-block">对话历史</div>
-                            <div class="space-y-2 max-h-96 overflow-y-auto">
+                            <div class="space-y-2 max-h-96 overflow-y-scroll scrollbar-hide">
                                 <div
                                     v-for="session in sortedSessions"
                                     :key="session.id"
@@ -104,7 +104,7 @@
                     <!-- 会话列表 -->
                     <div class="bg-white border-4 border-black shadow-retro p-3">
                         <div class="bg-black text-white px-2 py-1 text-sm font-bold mb-3 inline-block">2. CHAT HISTORY</div>
-                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                        <div class="space-y-2 max-h-64 overflow-y-scroll scrollbar-hide">
                             <div
                                 v-for="session in sortedSessions"
                                 :key="session.id"

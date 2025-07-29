@@ -19,6 +19,16 @@
     @apply bg-gray-400;
 }
 
+/* 隐藏滚动条但保持滚动功能 */
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
 /* 打字动画 */
 .typing-dot {
     @apply w-2 h-2 bg-gray-400 rounded-full animate-pulse-dot;
