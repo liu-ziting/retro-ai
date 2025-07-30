@@ -72,6 +72,12 @@
                                         @click="selectPromptPreset('default')"
                                         class="px-2 py-1 bg-retro-pink border-2 border-black font-bold text-white text-xs hover:bg-pink-400 shadow-retro"
                                     >
+                                        🕹️ 复古
+                                    </button>
+                                    <button
+                                        @click="selectPromptPreset('fuck')"
+                                        class="px-2 py-1 bg-retro-green border-2 border-black font-bold text-white text-xs hover:bg-green-400 shadow-retro"
+                                    >
                                         🔥 Fuck
                                     </button>
                                     <button
@@ -85,12 +91,6 @@
                                         class="px-2 py-1 bg-retro-purple border-2 border-black font-bold text-white text-xs hover:bg-purple-400 shadow-retro"
                                     >
                                         🎨 创意
-                                    </button>
-                                    <button
-                                        @click="selectPromptPreset('academic')"
-                                        class="px-2 py-1 bg-retro-green border-2 border-black font-bold text-white text-xs hover:bg-green-400 shadow-retro"
-                                    >
-                                        📚 学术
                                     </button>
                                     <button
                                         @click="selectPromptPreset('casual')"
