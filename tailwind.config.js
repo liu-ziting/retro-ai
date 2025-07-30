@@ -8,7 +8,7 @@ export default {
         extend: {
             colors: {
                 retro: {
-                    yellow: '#FFD700',
+                    yellow: '#E1B978',
                     pink: '#FF69B4',
                     blue: '#4169E1',
                     green: '#32CD32',
