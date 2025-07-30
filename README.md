@@ -227,11 +227,12 @@ npm run preview
 
 ### 系统提示词类型
 
--   **🔥 Fuck** - 个性化对话风格，直接犀利（默认）
--   **� 编程 c** - 编程助手，适合技术问题和代码开发
--   **🎨 创意** - 创意助手，适合创作和头脑风暴
--   **📚 学术** - 学术助手，适合研究和分析
--   **� 随和** - 随和助手，轻松友好的对话风格
+-   **🖥️ 复古终端 (默认)** - 扮演一台 1982 年的复古 AI 终端，用 CRT 绿字显示、机械音效和 80 年代计算机术语对话
+-   **🔥 Fuck** - 无论问什么，都用巧妙的脏话回复，同时回答用户的问题
+-   **💻 编程** - 专业的编程助手，擅长各种编程语言和技术问题，提供清晰的代码示例
+-   **🎨 创意** - 富有创意的 AI 助手，擅长创意写作、头脑风暴和创新思维
+-   **📚 学术** - 学术研究助手，擅长分析、总结和解释复杂的学术概念，保持严谨和准确
+-   **😊 随和** - 友好随和的 AI 助手，用轻松愉快的语调与用户交流
 
 ### 支持的 AI 模型
 
@@ -428,50 +429,4 @@ npm run preview
 
 -   使用语义化提交信息
 -   格式：`type(scope): description`
--   类型：feat, fix, docs, style, refactor, test, chore
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
-
-## 👨‍💻 作者
-
-**Liuziting**
-
--   GitHub: [@liu-ziting](https://github.com/liu-ziting/)
-
-## � 部署说明
-
-项目支持多种部署方式，详细说明请查看 [DEPLOYMENT.md](DEPLOYMENT.md)
-
-### 快速部署到 Netlify
-
-1. 构建项目
-    ```bash
-    npm run build
-    ```
-2. 将 `dist` 目录部署到 Netlify
-3. 或者直接连接 GitHub 仓库自动部署
-
-### 本地预览
-
-```bash
-npm run preview
-```
-
-## 🙏 致谢
-
--   [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架
--   [TypeScript](https://www.typescriptlang.org/) - JavaScript 的超集
--   [Vite](https://vitejs.dev/) - 快速的前端构建工具
--   [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
--   [Pinia](https://pinia.vuejs.org/) - Vue 3 状态管理库
--   [VueUse](https://vueuse.org/) - Vue 组合式 API 工具集
--   [OpenAI](https://openai.com/) - 标准化的 AI API 接口
--   [DeepSeek](https://www.deepseek.com/) - 提供强大的 AI 模型服务
--   [PostCSS](https://postcss.org/) - CSS 后处理器
--   [Autoprefixer](https://autoprefixer.github.io/) - CSS 前缀自动添加
-
----
-
-**RetroBot - 让 AI 对话回到复古游戏时代！** 🤖✨🎮
+-   类型：feat, fix, docs, style, refactor
