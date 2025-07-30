@@ -2,7 +2,7 @@
 
 [English Version](README_EN.md) | [中文版本](README.md)
 
-![RetroBot 截图](/img.png)
+![RetroBot 截图](https://github.com/liu-ziting/retro-ai/blob/main/public/img.png?raw=true)
 
 > 🚀 **Vibe Coding**  
 > 通过 Kiro 编辑器，实现了从需求分析、架构设计到代码实现的全流程开发。
