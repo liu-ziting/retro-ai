@@ -12,9 +12,14 @@
                 <div class="text-center">
                     <h1 class="text-xl font-bold text-white drop-shadow-lg">Retro<span class="text-retro-yellow">Bot</span></h1>
                 </div>
-                <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro">
-                    <span class="text-base">⚙️</span>
-                </button>
+                <div class="flex gap-1">
+                    <button @click="showStatistics = !showStatistics" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro">
+                        <span class="text-base">📊</span>
+                    </button>
+                    <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro">
+                        <span class="text-base">⚙️</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -30,7 +35,14 @@
                         </h1>
                         <p class="text-white/90 text-sm mt-1 uppercase tracking-wide">DEEP CONVERSATIONS! SMART INSIGHTS!</p>
                     </div>
-                    <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">⚙️ 配置</button>
+                    <div class="flex gap-2">
+                        <button @click="showStatistics = !showStatistics" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">
+                            📊 统计
+                        </button>
+                        <button @click="showSettings = !showSettings" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">
+                            ⚙️ 配置
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="flex flex-col lg:grid lg:grid-cols-4 lg:gap-4 flex-1 lg:flex-none" :class="{ hidden: isFullscreen }">
@@ -518,7 +530,7 @@
         </div>
 
         <!-- 确认对话框 -->
-        <div v-if="showConfirmDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in p-4" @click="showConfirmDialog = false">
+        <div v-if="showConfirmDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] animate-fade-in p-4" @click="showConfirmDialog = false">
             <div class="bg-white border-4 border-black shadow-retro w-full max-w-sm max-h-[90vh] flex flex-col animate-slide-up" @click.stop>
                 <div class="bg-red-500 border-b-4 border-black p-4 flex-shrink-0">
                     <h3 class="font-bold text-white text-lg">⚠️ 确认操作</h3>
@@ -536,6 +548,152 @@
                 </div>
             </div>
         </div>
+
+        <!-- 统计面板 -->
+        <div v-if="showStatistics" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in p-4" @click="showStatistics = false">
+            <div class="bg-white border-4 border-black shadow-retro w-full max-w-4xl max-h-[90vh] flex flex-col animate-slide-up" @click.stop>
+                <div class="bg-retro-blue border-b-4 border-black p-4 flex-shrink-0 flex items-center justify-between">
+                    <h3 class="font-bold text-white text-lg">📊 STATISTICS PANEL</h3>
+                    <button @click="showStatistics = false" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro text-black">✕</button>
+                </div>
+
+                <!-- 可滚动内容区域 -->
+                <div class="flex-1 overflow-y-auto min-h-0">
+                    <div class="p-6">
+                        <!-- 总体统计 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <!-- 对话统计 -->
+                            <div class="bg-retro-yellow border-2 border-black shadow-retro p-4">
+                                <div class="text-center">
+                                    <div class="text-2xl mb-2">💬</div>
+                                    <div class="font-bold text-lg">{{ formatNumber(realTimeStats.totalSessions) }}</div>
+                                    <div class="text-xs text-gray-700">总对话数</div>
+                                </div>
+                            </div>
+
+                            <!-- 消息统计 -->
+                            <div class="bg-retro-pink border-2 border-black shadow-retro p-4">
+                                <div class="text-center">
+                                    <div class="text-2xl mb-2">📝</div>
+                                    <div class="font-bold text-lg text-white">{{ formatNumber(realTimeStats.totalMessages) }}</div>
+                                    <div class="text-xs text-white/90">总消息数</div>
+                                </div>
+                            </div>
+
+                            <!-- 字符统计 -->
+                            <div class="bg-retro-green border-2 border-black shadow-retro p-4">
+                                <div class="text-center">
+                                    <div class="text-2xl mb-2">🔤</div>
+                                    <div class="font-bold text-lg text-white">{{ formatNumber(realTimeStats.totalCharacters) }}</div>
+                                    <div class="text-xs text-white/90">总字符数</div>
+                                </div>
+                            </div>
+
+                            <!-- API调用统计 -->
+                            <div class="bg-retro-purple border-2 border-black shadow-retro p-4">
+                                <div class="text-center">
+                                    <div class="text-2xl mb-2">🚀</div>
+                                    <div class="font-bold text-lg text-white">{{ formatNumber(realTimeStats.totalApiCalls) }}</div>
+                                    <div class="text-xs text-white/90">API调用次数</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 详细统计 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- 消息详情 -->
+                            <div class="bg-gray-50 border-2 border-black shadow-retro p-4">
+                                <h4 class="font-bold text-lg mb-4 text-center bg-black text-white px-2 py-1">📊 消息详情</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">👤 用户消息:</span>
+                                        <span class="text-sm">{{ formatNumber(realTimeStats.totalUserMessages) }} 条</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">🤖 AI回复:</span>
+                                        <span class="text-sm">{{ formatNumber(realTimeStats.totalAiMessages) }} 条</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">👤 用户字符:</span>
+                                        <span class="text-sm">{{ formatNumber(realTimeStats.totalUserCharacters) }} 字</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">🤖 AI字符:</span>
+                                        <span class="text-sm">{{ formatNumber(realTimeStats.totalAiCharacters) }} 字</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- API调用详情 -->
+                            <div class="bg-gray-50 border-2 border-black shadow-retro p-4">
+                                <h4 class="font-bold text-lg mb-4 text-center bg-black text-white px-2 py-1">🚀 API详情</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">🔄 总调用次数:</span>
+                                        <span class="text-sm">{{ formatNumber(realTimeStats.totalApiCalls) }} 次</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">📊 成功率:</span>
+                                        <span class="text-sm"
+                                            >{{ realTimeStats.totalApiCalls > 0 ? Math.round((realTimeStats.totalAiMessages / realTimeStats.totalApiCalls) * 100) : 0 }}%</span
+                                        >
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">🎯 首次使用:</span>
+                                        <span class="text-sm">{{ new Date(realTimeStats.firstUseTime).toLocaleDateString('zh-CN') }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-white border border-gray-300">
+                                        <span class="font-bold text-sm">🔄 最后活跃:</span>
+                                        <span class="text-sm">{{ formatTime(realTimeStats.lastActiveTime) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 平均统计 -->
+                        <!-- <div class="mt-6 bg-retro-orange border-2 border-black shadow-retro p-4">
+                            <h4 class="font-bold text-lg mb-4 text-center text-white">📈 平均统计</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="text-center text-white">
+                                    <div class="font-bold text-lg">
+                                        {{ realTimeStats.totalSessions > 0 ? Math.round(realTimeStats.totalMessages / realTimeStats.totalSessions) : 0 }}
+                                    </div>
+                                    <div class="text-xs opacity-90">平均每对话消息数</div>
+                                </div>
+                                <div class="text-center text-white">
+                                    <div class="font-bold text-lg">
+                                        {{ realTimeStats.totalMessages > 0 ? Math.round(realTimeStats.totalCharacters / realTimeStats.totalMessages) : 0 }}
+                                    </div>
+                                    <div class="text-xs opacity-90">平均每消息字符数</div>
+                                </div>
+                                <div class="text-center text-white">
+                                    <div class="font-bold text-lg">
+                                        {{ realTimeStats.totalApiCalls > 0 ? Math.round((realTimeStats.totalAiMessages / realTimeStats.totalApiCalls) * 100) : 0 }}%
+                                    </div>
+                                    <div class="text-xs opacity-90">API成功率</div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- 操作按钮 -->
+                        <!-- <div class="mt-6 flex justify-center">
+                            <button
+                                @click="
+                                    showConfirm(() => {
+                                        chatStore.resetStatistics()
+                                        showStatistics = false
+                                        window.alert('统计数据已重置！')
+                                    })
+                                "
+                                class="px-4 py-2 bg-red-500 border-2 border-black font-bold text-white hover:bg-red-400 shadow-retro text-sm"
+                            >
+                                🗑️ 重置统计
+                            </button>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -544,13 +702,15 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useChatStore } from './stores/chat'
 import { SYSTEM_PROMPTS } from './config/prompts'
+import { formatNumber } from './utils/configUtils'
 
 const chatStore = useChatStore()
-const { sessions, currentSessionId, currentSession, sortedSessions, isLoading, apiConfig } = storeToRefs(chatStore)
+const { sessions, currentSessionId, currentSession, sortedSessions, isLoading, apiConfig, realTimeStats } = storeToRefs(chatStore)
 
 const inputMessage = ref('')
 const showSettings = ref(false)
 const showSidebar = ref(false)
+const showStatistics = ref(false)
 const messagesContainer = ref<HTMLElement>()
 const fullscreenMessagesContainer = ref<HTMLElement>()
 const showConfirmDialog = ref(false)
@@ -644,21 +804,21 @@ const executeConfirm = () => {
 const resetApiConfig = () => {
     showConfirm(() => {
         chatStore.resetApiConfig()
-        alert('API配置已重置！')
+        window.alert('API配置已重置！')
     })
 }
 
 const resetSessions = () => {
     showConfirm(() => {
         chatStore.resetSessions()
-        alert('对话记录已清空！')
+        window.alert('对话记录已清空！')
     })
 }
 
 const resetAllConfig = () => {
     showConfirm(() => {
         chatStore.resetAllConfig()
-        alert('所有设置已重置！')
+        window.alert('所有设置已重置！')
     })
 }
 

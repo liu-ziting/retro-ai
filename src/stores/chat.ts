@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import OpenAI from 'openai'
-import type { ChatSession, Message, ApiConfig } from '@/types'
+import type { ChatSession, Message, ApiConfig, Statistics, DailyStats } from '@/types'
 import { DEFAULT_SYSTEM_PROMPT, SYSTEM_PROMPTS, type SystemPromptType } from '@/config/prompts'
-import { getDefaultApiConfig, validateApiConfig } from '@/utils/configUtils'
+import { getDefaultApiConfig, validateApiConfig, getDefaultStatistics } from '@/utils/configUtils'
 
 export const useChatStore = defineStore('chat', () => {
     // 状态
@@ -11,11 +11,45 @@ export const useChatStore = defineStore('chat', () => {
     const currentSessionId = ref<string | null>(null)
     const isLoading = ref(false)
     const apiConfig = ref<ApiConfig>(getDefaultApiConfig())
+    const statistics = ref<Statistics>(getDefaultStatistics())
 
     // 计算属性
     const currentSession = computed(() => sessions.value.find(s => s.id === currentSessionId.value))
 
     const sortedSessions = computed(() => [...sessions.value].sort((a, b) => b.updatedAt - a.updatedAt))
+
+    // 实时统计计算
+    const realTimeStats = computed(() => {
+        const stats = {
+            totalSessions: sessions.value.length,
+            totalMessages: 0,
+            totalUserMessages: 0,
+            totalAiMessages: 0,
+            totalCharacters: 0,
+            totalUserCharacters: 0,
+            totalAiCharacters: 0
+        }
+
+        sessions.value.forEach(session => {
+            session.messages.forEach(message => {
+                stats.totalMessages++
+                stats.totalCharacters += message.content.length
+
+                if (message.role === 'user') {
+                    stats.totalUserMessages++
+                    stats.totalUserCharacters += message.content.length
+                } else {
+                    stats.totalAiMessages++
+                    stats.totalAiCharacters += message.content.length
+                }
+            })
+        })
+
+        return {
+            ...statistics.value,
+            ...stats
+        }
+    })
 
     // 方法
     const createSession = (title = '新对话') => {
@@ -58,6 +92,10 @@ export const useChatStore = defineStore('chat', () => {
             session.messages.push(newMessage)
             session.updatedAt = Date.now()
 
+            // 更新统计信息
+            updateDailyStats('message', message.content.length)
+            statistics.value.lastActiveTime = Date.now()
+
             // 自动生成标题
             if (session.messages.filter(m => m.role === 'user' && m.content.trim()).length === 1 && message.role === 'user') {
                 session.title = message.content.slice(0, 20) + (message.content.length > 20 ? '...' : '')
@@ -91,6 +129,40 @@ export const useChatStore = defineStore('chat', () => {
         saveToStorage()
     }
 
+    // 统计相关方法
+    const updateDailyStats = (type: 'message' | 'apiCall', characters = 0) => {
+        const today = new Date().toISOString().split('T')[0]
+        let todayStats = statistics.value.dailyStats.find(s => s.date === today)
+
+        if (!todayStats) {
+            todayStats = {
+                date: today,
+                messages: 0,
+                characters: 0,
+                apiCalls: 0,
+                usageTime: 0
+            }
+            statistics.value.dailyStats.push(todayStats)
+        }
+
+        if (type === 'message') {
+            todayStats.messages++
+            todayStats.characters += characters
+        } else if (type === 'apiCall') {
+            todayStats.apiCalls++
+        }
+
+        // 只保留最近30天的数据
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+        statistics.value.dailyStats = statistics.value.dailyStats.filter(s => new Date(s.date) >= thirtyDaysAgo)
+    }
+
+    const resetStatistics = () => {
+        statistics.value = getDefaultStatistics()
+        localStorage.removeItem('chat-statistics')
+    }
+
     // 重置所有配置（包括会话数据）
     const resetAllConfig = () => {
         // 重置API配置
@@ -100,10 +172,14 @@ export const useChatStore = defineStore('chat', () => {
         sessions.value = []
         currentSessionId.value = null
 
+        // 重置统计数据
+        statistics.value = getDefaultStatistics()
+
         // 清除本地存储
         localStorage.removeItem('chat-sessions')
         localStorage.removeItem('current-session-id')
         localStorage.removeItem('api-config')
+        localStorage.removeItem('chat-statistics')
 
         // 创建一个新的默认会话
         createSession()
@@ -211,6 +287,10 @@ export const useChatStore = defineStore('chat', () => {
                 }
             }
 
+            // 更新API调用统计
+            updateDailyStats('apiCall', 0)
+            statistics.value.totalApiCalls++
+
             // 保存到本地存储
             saveToStorage()
         } catch (error) {
@@ -236,12 +316,14 @@ export const useChatStore = defineStore('chat', () => {
         localStorage.setItem('chat-sessions', JSON.stringify(sessions.value))
         localStorage.setItem('current-session-id', currentSessionId.value || '')
         localStorage.setItem('api-config', JSON.stringify(apiConfig.value))
+        localStorage.setItem('chat-statistics', JSON.stringify(statistics.value))
     }
 
     const loadFromStorage = () => {
         const savedSessions = localStorage.getItem('chat-sessions')
         const savedCurrentId = localStorage.getItem('current-session-id')
         const savedApiConfig = localStorage.getItem('api-config')
+        const savedStatistics = localStorage.getItem('chat-statistics')
 
         if (savedSessions) {
             sessions.value = JSON.parse(savedSessions)
@@ -251,6 +333,9 @@ export const useChatStore = defineStore('chat', () => {
         }
         if (savedApiConfig) {
             apiConfig.value = JSON.parse(savedApiConfig)
+        }
+        if (savedStatistics) {
+            statistics.value = JSON.parse(savedStatistics)
         }
 
         // 如果没有会话，创建一个默认会话
@@ -266,6 +351,8 @@ export const useChatStore = defineStore('chat', () => {
         sortedSessions,
         isLoading,
         apiConfig,
+        statistics,
+        realTimeStats,
         createSession,
         deleteSession,
         selectSession,
@@ -276,6 +363,8 @@ export const useChatStore = defineStore('chat', () => {
         resetApiConfig,
         resetAllConfig,
         resetSessions,
+
+        resetStatistics,
         loadFromStorage
     }
 })

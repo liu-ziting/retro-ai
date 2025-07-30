@@ -29,3 +29,24 @@ export interface AppConfig {
     language: 'zh' | 'en'
     apiConfig: ApiConfig
 }
+
+export interface Statistics {
+    totalSessions: number
+    totalMessages: number
+    totalUserMessages: number
+    totalAiMessages: number
+    totalCharacters: number
+    totalUserCharacters: number
+    totalAiCharacters: number
+    totalApiCalls: number
+    firstUseTime: number // 首次使用时间
+    lastActiveTime: number // 最后活跃时间
+    dailyStats: DailyStats[]
+}
+
+export interface DailyStats {
+    date: string // YYYY-MM-DD
+    messages: number
+    characters: number
+    apiCalls: number
+}

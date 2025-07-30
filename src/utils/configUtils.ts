@@ -1,4 +1,4 @@
-import type { ApiConfig } from '@/types'
+import type { ApiConfig, Statistics } from '@/types'
 import { DEFAULT_SYSTEM_PROMPT } from '@/config/prompts'
 
 /**
@@ -39,6 +39,33 @@ export function validateApiConfig(config: Partial<ApiConfig>): { valid: boolean;
         valid: errors.length === 0,
         errors
     }
+}
+
+/**
+ * 获取默认统计数据
+ */
+export function getDefaultStatistics(): Statistics {
+    const now = Date.now()
+    return {
+        totalSessions: 0,
+        totalMessages: 0,
+        totalUserMessages: 0,
+        totalAiMessages: 0,
+        totalCharacters: 0,
+        totalUserCharacters: 0,
+        totalAiCharacters: 0,
+        totalApiCalls: 0,
+        firstUseTime: now,
+        lastActiveTime: now,
+        dailyStats: []
+    }
+}
+
+/**
+ * 格式化数字（添加千分位分隔符）
+ */
+export function formatNumber(num: number): string {
+    return num.toLocaleString('zh-CN')
 }
 
 /**
