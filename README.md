@@ -1,5 +1,9 @@
 # RetroBot - 复古风格 AI 智能对话助手
 
+[English Version](README_EN.md) | [中文版本](README.md)
+
+![RetroBot 截图](/img.png)
+
 > 🚀 **Vibe Coding**  
 > 通过 Kiro 编辑器，实现了从需求分析、架构设计到代码实现的全流程开发。
 
@@ -470,4 +474,4 @@ npm run preview
 
 ---
 
-**DeepFuck Chat App - 让 AI 对话回到复古游戏时代！** 🤖✨🎮
+**RetroBot - 让 AI 对话回到复古游戏时代！** 🤖✨🎮
