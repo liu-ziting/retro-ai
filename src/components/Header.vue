@@ -25,8 +25,8 @@
     >
         <div class="flex items-center justify-between">
             <div>
-                <h1 class="text-4xl font-bold text-white drop-shadow-lg">Retro<span class="text-retro-yellow">Bot</span></h1>
-                <p class="text-white/90 text-sm mt-1 uppercase tracking-wide">DEEP CONVERSATIONS! SMART INSIGHTS!</p>
+                <h1 class="text-4xl font-bold text-white drop-shadow-lg">Retro<span class="text-retro-yellow">-Bot</span></h1>
+                <p class="text-white/90 text-sm mt-1 uppercase tracking-wide">WHERE CLASSIC CHARM MEETS AI SMARTS—CHAT THE RETRO WAY!</p>
             </div>
             <div class="flex gap-2">
                 <button @click="$emit('toggle-statistics')" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">📊 统计</button>
