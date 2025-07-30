@@ -1,5 +1,8 @@
 # RetroBot - 复古风格 AI 智能对话助手
 
+> 🚀 **Vibe Coding**  
+> 通过 Kiro 编辑器，实现了从需求分析、架构设计到代码实现的全流程开发。
+
 一个基于 Vue 3 + TypeScript + Tailwind CSS 构建的复古像素风格 AI 聊天应用，支持多种 AI 模型，提供独特的复古游戏界面体验。
 
 ## 🎨 项目特色
@@ -12,6 +15,7 @@
 -   **灵活参数配置** - 支持自定义 API 密钥、模型、温度等参数
 -   **多种对话模式** - 内置编程、创意、学术、随和等多种系统提示词
 -   **响应式设计** - 完美适配桌面端和移动端，移动端采用抽屉式导航
+-   **实时统计** - 提供详细的使用统计和数据分析
 
 ## 🚀 技术栈
 
@@ -34,33 +38,65 @@
 
 ### API 集成
 
--   **OpenAI SDK** - 用于与 AI API 通信
+-   **OpenAI SDK v4.28.0** - 用于与 AI API 通信
 -   **多模型支持** - 支持 DeepSeek、OpenAI、Claude 等兼容 OpenAI 格式的 API
+
+### 主要依赖版本
+
+-   **Vue 3.5.18** - 核心框架
+-   **TypeScript 5.3.0** - 类型系统
+-   **Vite 5.0.0** - 构建工具
+-   **Tailwind CSS 3.4.0** - 样式框架
+-   **Pinia 2.1.7** - 状态管理
+-   **@vueuse/core 10.7.0** - 组合式 API 工具
 
 ## 📦 项目结构
 
 ```
-retro-ai/
-├── public/                 # 静态资源
+deepfuck-chat-app/
+├── public/                    # 静态资源
+│   └── favicon.ico           # 网站图标
 ├── src/
-│   ├── components/         # Vue组件（暂未使用）
-│   ├── config/            # 配置文件
-│   │   └── prompts.ts     # 系统提示词配置
-│   ├── stores/            # Pinia状态管理
-│   │   └── chat.ts        # 聊天相关状态
-│   ├── types/             # TypeScript类型定义
-│   │   └── index.ts       # 主要类型接口
-│   ├── utils/             # 工具函数
-│   │   └── configUtils.ts # 配置验证工具
-│   ├── App.vue            # 主应用组件
-│   ├── main.ts            # 应用入口
-│   ├── style.css          # 全局样式
-├── index.html             # HTML模板
-├── package.json           # 项目依赖
-├── tailwind.config.js     # Tailwind配置
-├── tsconfig.json          # TypeScript配置
-├── vite.config.ts         # Vite配置
-└── README.md              # 项目文档
+│   ├── components/           # Vue 组件
+│   │   ├── ChatWindow.vue    # 聊天窗口组件
+│   │   ├── ConfirmDialog.vue # 确认对话框组件
+│   │   ├── Header.vue        # 头部组件
+│   │   ├── InputArea.vue     # 输入区域组件
+│   │   ├── MessageItem.vue   # 消息项组件
+│   │   ├── SessionList.vue   # 会话列表组件
+│   │   ├── SettingsModal.vue # 设置模态框组件
+│   │   ├── Sidebar.vue       # 侧边栏组件
+│   │   └── StatisticsModal.vue # 统计模态框组件
+│   ├── config/               # 配置文件
+│   │   └── prompts.ts        # 系统提示词配置
+│   ├── stores/               # Pinia 状态管理
+│   │   └── chat.ts           # 聊天相关状态管理
+│   ├── types/                # TypeScript 类型定义
+│   │   └── index.ts          # 主要类型接口
+│   ├── utils/                # 工具函数
+│   │   └── configUtils.ts    # 配置验证工具
+│   ├── App.vue               # 主应用组件
+│   ├── main.ts               # 应用入口文件
+│   ├── style.css             # 全局样式
+│   ├── env.d.ts              # 环境变量类型声明
+│   ├── shims-vue.d.ts        # Vue 类型声明
+│   └── vue-shim.d.ts         # Vue 组件类型声明
+├── dist/                     # 构建输出目录
+├── node_modules/             # 依赖包目录
+├── .git/                     # Git 版本控制
+├── .gitignore                # Git 忽略文件配置
+├── DEPLOYMENT.md             # 部署说明文档
+├── index.html                # HTML 模板
+├── netlify.toml              # Netlify 部署配置
+├── package.json              # 项目依赖和脚本
+├── package-lock.json         # 依赖锁定文件
+├── postcss.config.js         # PostCSS 配置
+├── tailwind.config.js        # Tailwind CSS 配置
+├── test-chat.html            # 测试聊天页面
+├── tsconfig.json             # TypeScript 配置
+├── tsconfig.node.json        # Node.js TypeScript 配置
+├── vite.config.ts            # Vite 构建配置
+└── README.md                 # 项目文档
 ```
 
 ## 🛠️ 安装和运行
@@ -94,6 +130,12 @@ npm run dev
 npm run build
 ```
 
+### 构建前类型检查
+
+```bash
+npm run build:check
+```
+
 ### 预览生产版本
 
 ```bash
@@ -107,8 +149,9 @@ npm run preview
 -   **新建对话** - 点击"START NEW CHAT"创建新的对话会话
 -   **会话切换** - 在左侧会话列表中点击切换不同对话
 -   **会话删除** - 鼠标悬停在会话上显示删除按钮
--   **自动标题** - 根据首条消息自动生成会话标题
+-   **自动标题** - 根据首条消息自动生成会话标题（最多 20 字符）
 -   **时间显示** - 显示会话的最后更新时间
+-   **会话排序** - 按最后更新时间自动排序
 
 ### 2. 智能对话
 
@@ -116,19 +159,37 @@ npm run preview
 -   **消息历史** - 保持完整的对话上下文
 -   **加载状态** - 显示打字动画和加载提示
 -   **错误处理** - 网络错误时显示友好提示
+-   **消息工具栏** - 支持复制消息内容
 
 ### 3. 配置管理
 
 -   **API 配置** - 自定义 API 密钥、基础 URL、模型名称
--   **参数调节** - 调整温度参数控制回复随机性
+-   **参数调节** - 调整温度参数控制回复随机性（0-2）
 -   **系统提示词** - 选择不同的对话风格和角色设定
 -   **配置验证** - 实时验证配置参数的有效性
+-   **预设切换** - 快速切换系统提示词类型
 
 ### 4. 数据持久化
 
 -   **本地存储** - 所有对话和配置自动保存到浏览器
 -   **数据恢复** - 刷新页面后自动恢复之前的对话
 -   **配置重置** - 支持重置 API 配置或清空所有数据
+-   **统计数据** - 保存使用统计和每日数据
+
+### 5. 统计分析
+
+-   **实时统计** - 显示会话数、消息数、字符数等统计信息
+-   **用户/AI 分析** - 分别统计用户和 AI 的消息数量和字符数
+-   **API 调用统计** - 记录 API 调用次数和使用情况
+-   **每日数据** - 保存最近 30 天的使用数据
+-   **使用时间** - 记录首次使用和最后活跃时间
+
+### 6. 界面交互
+
+-   **全屏模式** - 支持全屏聊天体验
+-   **工具栏切换** - 消息悬停显示操作工具栏
+-   **确认对话框** - 重要操作前的确认提示
+-   **响应式布局** - 桌面端和移动端自适应
 
 ## 🎨 UI 设计特色
 
@@ -162,11 +223,22 @@ npm run preview
 
 ### 系统提示词类型
 
--   **🔥 Fuck** - 个性化对话风格，直接犀利
--   **💻 编程** - 编程助手，适合技术问题和代码开发
+-   **🔥 Fuck** - 个性化对话风格，直接犀利（默认）
+-   **� 编程 c** - 编程助手，适合技术问题和代码开发
 -   **🎨 创意** - 创意助手，适合创作和头脑风暴
 -   **📚 学术** - 学术助手，适合研究和分析
--   **😊 随和** - 随和助手，轻松友好的对话风格
+-   **� 随和** - 随和助手，轻松友好的对话风格
+
+### 支持的 AI 模型
+
+-   **DeepSeek 系列**
+    -   `deepseek-chat` - 通用对话模型
+    -   `deepseek-coder` - 编程专用模型
+-   **OpenAI 系列**
+    -   `gpt-3.5-turbo` - 快速响应模型
+    -   `gpt-4` - 高质量对话模型
+    -   `gpt-4-turbo` - 增强版 GPT-4
+-   **其他兼容 OpenAI API 格式的模型**
 
 ## 📱 使用指南
 
@@ -175,7 +247,28 @@ npm run preview
 1. 打开应用后会自动创建一个默认对话
 2. 点击右上角"⚙️ 配置"按钮设置 API 参数
 3. 填入有效的 API Key 和其他配置
-4. 点击"保存设置"完成配置
+4. 选择合适的系统提示词类型
+5. 点击"保存设置"完成配置
+
+### API 配置示例
+
+```javascript
+// DeepSeek 配置示例
+{
+  "apiKey": "sk-xxxxxxxxxxxxxxxx",
+  "baseUrl": "https://api.deepseek.com",
+  "model": "deepseek-chat",
+  "temperature": 0.7
+}
+
+// OpenAI 配置示例
+{
+  "apiKey": "sk-xxxxxxxxxxxxxxxx",
+  "baseUrl": "https://api.openai.com/v1",
+  "model": "gpt-3.5-turbo",
+  "temperature": 0.7
+}
+```
 
 ### 开始对话
 
@@ -183,6 +276,7 @@ npm run preview
 2. 按 Enter 键或点击"SEND!"按钮发送
 3. AI 会实时流式回复消息
 4. 对话会自动保存到本地存储
+5. 可以随时切换全屏模式获得更好的体验
 
 ### 管理会话
 
@@ -190,6 +284,14 @@ npm run preview
 2. 在左侧列表中点击切换不同会话
 3. 鼠标悬停在会话上可以删除会话
 4. 使用"🗑️ 清空对话记录"清除所有会话
+5. 会话按最后更新时间自动排序
+
+### 查看统计
+
+1. 点击右上角"📊 统计"按钮
+2. 查看详细的使用统计数据
+3. 包括消息数量、字符统计、API 调用次数等
+4. 支持每日数据分析和趋势查看
 
 ## 🔒 安全说明
 
@@ -198,44 +300,92 @@ npm run preview
 -   建议定期备份重要对话内容
 -   在公共设备上使用后建议清除浏览器数据
 
+## ⚠️ 重要说明
+
+### 项目特色功能
+
+-   **个性化对话风格** - 默认的"Fuck"模式提供直接犀利的对话体验
+-   **流式响应** - 实时显示 AI 回复，提供更好的交互体验
+-   **完全本地化** - 所有数据存储在浏览器本地，保护隐私安全
+-   **多模型兼容** - 支持任何兼容 OpenAI API 格式的服务
+
+### 使用注意事项
+
+-   本应用仅在浏览器本地运行，不会上传任何数据到服务器
+-   API 密钥仅存储在本地浏览器中，请妥善保管
+-   建议定期备份重要对话内容
+-   在公共设备上使用后建议清除浏览器数据
+
 ## 🐛 常见问题
 
 ### API 调用失败
 
--   检查 API Key 是否正确
+-   检查 API Key 是否正确且有效
 -   确认 Base URL 地址是否可访问
 -   检查网络连接是否正常
 -   查看浏览器控制台的错误信息
+-   确认 API 服务是否支持流式响应
 
 ### 对话记录丢失
 
 -   检查浏览器是否清除了本地存储
 -   确认没有使用无痕浏览模式
 -   尝试刷新页面恢复数据
+-   检查 localStorage 是否被禁用
 
 ### 样式显示异常
 
 -   确认浏览器支持现代 CSS 特性
 -   检查是否有浏览器扩展影响样式
 -   尝试清除浏览器缓存
+-   确认 JavaScript 已启用
 
-## 🚀 开发计划
+### 流式响应问题
 
-### 即将推出
+-   确认使用的 API 服务支持流式响应
+-   检查网络连接稳定性
+-   尝试降低 temperature 参数值
+-   查看浏览器网络面板的请求状态
 
--   [ ] 消息搜索和过滤功能
--   [ ] 对话导出（Markdown、JSON 格式）
--   [ ] 更多复古主题和配色方案
--   [ ] 语音输入和语音回复
--   [ ] 图片上传和多模态对话
+## 🔧 技术细节
 
-### 长期规划
+### 组件架构
 
--   [ ] 多语言国际化支持
--   [ ] 插件系统和自定义扩展
--   [ ] 云端同步和跨设备访问
--   [ ] PWA 支持和离线功能
--   [ ] 团队协作和分享功能
+项目采用组件化架构，主要组件包括：
+
+-   **App.vue** - 主应用容器，管理全局状态和模态框
+-   **Header.vue** - 顶部导航栏，包含设置和统计按钮
+-   **Sidebar.vue** - 侧边栏，包含会话列表和管理功能
+-   **ChatWindow.vue** - 聊天窗口，显示消息和输入区域
+-   **MessageItem.vue** - 单条消息组件，支持工具栏操作
+-   **InputArea.vue** - 消息输入区域
+-   **SettingsModal.vue** - 设置模态框，管理 API 配置
+-   **StatisticsModal.vue** - 统计模态框，显示使用数据
+-   **ConfirmDialog.vue** - 确认对话框，用于重要操作确认
+
+### 状态管理
+
+使用 Pinia 进行状态管理，主要包括：
+
+-   **会话管理** - 创建、删除、切换会话
+-   **消息管理** - 添加消息、流式更新
+-   **配置管理** - API 配置、系统提示词管理
+-   **统计管理** - 使用数据统计和分析
+-   **本地存储** - 自动保存和恢复数据
+
+### API 集成
+
+-   使用 OpenAI SDK 进行 API 调用
+-   支持流式响应，实时显示 AI 回复
+-   错误处理和重试机制
+-   支持多种兼容 OpenAI 格式的 API 服务
+
+### 样式系统
+
+-   基于 Tailwind CSS 的实用优先样式
+-   自定义复古主题色彩和动画
+-   响应式设计，支持桌面端和移动端
+-   立体阴影和像素风格边框效果
 
 ## 🤝 贡献指南
 
@@ -245,9 +395,20 @@ npm run preview
 
 1. Fork 项目到你的 GitHub 账户
 2. 克隆项目到本地
-3. 安装依赖并启动开发服务器
-4. 进行修改并测试
-5. 提交 Pull Request
+    ```bash
+    git clone https://github.com/your-username/deepfuck-chat-app.git
+    cd deepfuck-chat-app
+    ```
+3. 安装依赖
+    ```bash
+    npm install
+    ```
+4. 启动开发服务器
+    ```bash
+    npm run dev
+    ```
+5. 进行修改并测试
+6. 提交 Pull Request
 
 ### 代码规范
 
@@ -255,6 +416,15 @@ npm run preview
 -   遵循 Vue 3 Composition API 最佳实践
 -   保持代码简洁和注释清晰
 -   确保类型安全
+-   使用 ESLint 和 Prettier 保持代码风格一致
+-   组件命名使用 PascalCase
+-   文件命名使用 kebab-case
+
+### 提交规范
+
+-   使用语义化提交信息
+-   格式：`type(scope): description`
+-   类型：feat, fix, docs, style, refactor, test, chore
 
 ## 📄 许可证
 
@@ -266,15 +436,38 @@ npm run preview
 
 -   GitHub: [@liu-ziting](https://github.com/liu-ziting/)
 
+## � 部署说明
+
+项目支持多种部署方式，详细说明请查看 [DEPLOYMENT.md](DEPLOYMENT.md)
+
+### 快速部署到 Netlify
+
+1. 构建项目
+    ```bash
+    npm run build
+    ```
+2. 将 `dist` 目录部署到 Netlify
+3. 或者直接连接 GitHub 仓库自动部署
+
+### 本地预览
+
+```bash
+npm run preview
+```
+
 ## 🙏 致谢
 
 -   [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架
+-   [TypeScript](https://www.typescriptlang.org/) - JavaScript 的超集
+-   [Vite](https://vitejs.dev/) - 快速的前端构建工具
 -   [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
 -   [Pinia](https://pinia.vuejs.org/) - Vue 3 状态管理库
--   [DeepSeek](https://www.deepseek.com/) - 提供强大的 AI 模型服务
+-   [VueUse](https://vueuse.org/) - Vue 组合式 API 工具集
 -   [OpenAI](https://openai.com/) - 标准化的 AI API 接口
--   [Vite](https://vitejs.dev/) - 快速的前端构建工具
+-   [DeepSeek](https://www.deepseek.com/) - 提供强大的 AI 模型服务
+-   [PostCSS](https://postcss.org/) - CSS 后处理器
+-   [Autoprefixer](https://autoprefixer.github.io/) - CSS 前缀自动添加
 
 ---
 
-**RetroBot - 让 AI 对话回到复古游戏时代！** 🤖✨🎮
+**DeepFuck Chat App - 让 AI 对话回到复古游戏时代！** 🤖✨🎮
