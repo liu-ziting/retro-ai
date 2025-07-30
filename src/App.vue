@@ -112,6 +112,8 @@ const getCurrentPresetTitle = () => {
         if (value === currentPrompt) {
             switch (key) {
                 case 'default':
+                    return '🕹️ 复古'
+                case 'fuck':
                     return '🔥 Fuck'
                 case 'coding':
                     return '💻 编程'
