@@ -141,7 +141,7 @@ export const useChatStore = defineStore('chat', () => {
                 characters: 0,
                 apiCalls: 0,
                 usageTime: 0
-            }
+            } as DailyStats
             statistics.value.dailyStats.push(todayStats)
         }
 

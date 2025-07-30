@@ -5,7 +5,7 @@ export interface Message {
     timestamp: number
 }
 
-export interface ChatSession {
+export interface Session {
     id: string
     title: string
     messages: Message[]
@@ -22,14 +22,6 @@ export interface ApiConfig {
     systemPromptType?: 'default' | 'coding' | 'creative' | 'academic' | 'casual'
 }
 
-export type SupportedModel = 'deepseek-chat' | 'deepseek-coder' | 'gpt-3.5-turbo' | 'gpt-4' | 'gpt-4-turbo'
-
-export interface AppConfig {
-    theme: 'light' | 'dark'
-    language: 'zh' | 'en'
-    apiConfig: ApiConfig
-}
-
 export interface Statistics {
     totalSessions: number
     totalMessages: number
@@ -39,8 +31,8 @@ export interface Statistics {
     totalUserCharacters: number
     totalAiCharacters: number
     totalApiCalls: number
-    firstUseTime: number // 首次使用时间
-    lastActiveTime: number // 最后活跃时间
+    firstUseTime: number
+    lastActiveTime: number
     dailyStats: DailyStats[]
 }
 

@@ -1,0 +1,133 @@
+<template>
+    <div class="mb-3 lg:mb-4 animate-slide-up">
+        <div :class="['flex gap-2 lg:gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']">
+            <!-- AI头像 -->
+            <div v-if="message.role === 'assistant'" class="flex-shrink-0">
+                <div class="w-6 h-6 lg:w-8 lg:h-8 bg-retro-blue border-2 border-black flex items-center justify-center text-white font-bold text-xs lg:text-sm">🤖</div>
+            </div>
+
+            <!-- 消息气泡容器 -->
+            <div :class="['max-w-[85%] lg:max-w-[70%] relative', message.role === 'user' ? 'text-right' : 'text-left']">
+                <!-- 消息气泡 -->
+                <div
+                    :class="[
+                        'p-2 lg:p-3 border-2 border-black font-bold text-xs lg:text-sm cursor-pointer',
+                        message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
+                    ]"
+                    @click.stop="toggleToolbar"
+                >
+                    <!-- 消息内容或加载动画 -->
+                    <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
+                        {{ message.content }}
+                    </div>
+                    <div v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading" class="flex items-center gap-1">
+                        <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+
+                    <!-- 时间戳 -->
+                    <div
+                        v-if="message.content && message.content.trim()"
+                        :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
+                    >
+                        {{ formatTime(message.timestamp) }}
+                    </div>
+                </div>
+
+                <!-- 工具栏 -->
+                <div
+                    v-if="showToolbar && message.content && message.content.trim()"
+                    :class="['mt-1 flex gap-1 animate-slide-up', message.role === 'user' ? 'justify-end' : 'justify-start']"
+                >
+                    <button
+                        @click.stop="copyMessage"
+                        :class="[
+                            'px-2 py-1 border-2 border-black font-bold text-xs shadow-retro hover:scale-105 transition-transform',
+                            copySuccess ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-gray-100'
+                        ]"
+                        :title="copySuccess ? '已复制!' : '复制消息'"
+                    >
+                        {{ copySuccess ? '✓ 已复制' : '📋 复制' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- 用户头像 -->
+            <div v-if="message.role === 'user'" class="flex-shrink-0">
+                <div class="w-6 h-6 lg:w-8 lg:h-8 bg-retro-green border-2 border-black flex items-center justify-center text-white font-bold text-xs lg:text-sm">👤</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { Message } from '../types/chat'
+
+interface Props {
+    message: Message
+    isLoading?: boolean
+    showToolbar?: boolean
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+    'toggle-toolbar': [messageId: string]
+    'copy-message': [messageId: string, content: string]
+}>()
+
+const copySuccess = ref(false)
+
+const toggleToolbar = () => {
+    emit('toggle-toolbar', props.message.id)
+}
+
+const copyMessage = async () => {
+    try {
+        await navigator.clipboard.writeText(props.message.content)
+        copySuccess.value = true
+        setTimeout(() => {
+            copySuccess.value = false
+        }, 2000)
+    } catch (err) {
+        console.error('复制失败:', err)
+        // 降级方案
+        const textArea = document.createElement('textarea')
+        textArea.value = props.message.content
+        document.body.appendChild(textArea)
+        textArea.select()
+        try {
+            document.execCommand('copy')
+            copySuccess.value = true
+            setTimeout(() => {
+                copySuccess.value = false
+            }, 2000)
+        } catch (fallbackErr) {
+            console.error('降级复制也失败:', fallbackErr)
+        }
+        document.body.removeChild(textArea)
+    }
+
+    emit('copy-message', props.message.id, props.message.content)
+}
+
+const formatTime = (timestamp: number) => {
+    const now = Date.now()
+    const diff = now - timestamp
+
+    if (diff < 60000) return 'NOW'
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}M AGO`
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}H AGO`
+
+    return new Date(timestamp)
+        .toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+        .toUpperCase()
+}
+</script>
