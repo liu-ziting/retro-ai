@@ -194,6 +194,7 @@
                                 isFullscreen ? 'h-[calc(100vh-200px)]' : 'h-[calc(100vh-115px)] lg:h-96'
                             ]"
                             style="background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 0, 0.03) 20px, rgba(0, 0, 0, 0.03) 21px)"
+                            @click="hideToolbar"
                         >
                             <!-- 欢迎消息 -->
                             <div v-if="!currentSession?.messages.length" class="text-center py-8 lg:py-16">
@@ -214,32 +215,53 @@
                                         </div>
                                     </div>
 
-                                    <!-- 消息气泡 -->
-                                    <div
-                                        :class="[
-                                            'max-w-[85%] lg:max-w-[70%] p-2 lg:p-3 border-2 border-black font-bold text-xs lg:text-sm',
-                                            message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
-                                        ]"
-                                    >
-                                        <!-- 消息内容或加载动画 -->
-                                        <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
-                                            {{ message.content }}
-                                        </div>
+                                    <!-- 消息气泡容器 -->
+                                    <div :class="['max-w-[85%] lg:max-w-[70%] relative', message.role === 'user' ? 'text-right' : 'text-left']">
+                                        <!-- 消息气泡 -->
                                         <div
-                                            v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading"
-                                            class="flex items-center gap-1"
+                                            :class="[
+                                                'p-2 lg:p-3 border-2 border-black font-bold text-xs lg:text-sm cursor-pointer',
+                                                message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
+                                            ]"
+                                            @click.stop="toggleToolbar(message.id)"
                                         >
-                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
-                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                            <!-- 消息内容或加载动画 -->
+                                            <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
+                                                {{ message.content }}
+                                            </div>
+                                            <div
+                                                v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading"
+                                                class="flex items-center gap-1"
+                                            >
+                                                <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
+                                                <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                                <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                            </div>
+
+                                            <!-- 时间戳 -->
+                                            <div
+                                                v-if="message.content && message.content.trim()"
+                                                :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
+                                            >
+                                                {{ formatTime(message.timestamp) }}
+                                            </div>
                                         </div>
 
-                                        <!-- 时间戳 -->
+                                        <!-- 工具栏 -->
                                         <div
-                                            v-if="message.content && message.content.trim()"
-                                            :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
+                                            v-if="showToolbar === message.id && message.content && message.content.trim()"
+                                            :class="['mt-1 flex gap-1 animate-slide-up', message.role === 'user' ? 'justify-end' : 'justify-start']"
                                         >
-                                            {{ formatTime(message.timestamp) }}
+                                            <button
+                                                @click.stop="copyMessage(message.id, message.content)"
+                                                :class="[
+                                                    'px-2 py-1 border-2 border-black font-bold text-xs shadow-retro hover:scale-105 transition-transform',
+                                                    copySuccess === message.id ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-gray-100'
+                                                ]"
+                                                :title="copySuccess === message.id ? '已复制!' : '复制消息'"
+                                            >
+                                                {{ copySuccess === message.id ? '✓ 已复制' : '📋 复制' }}
+                                            </button>
                                         </div>
                                     </div>
 
@@ -317,6 +339,7 @@
                         ref="fullscreenMessagesContainer"
                         class="overflow-y-auto p-4 bg-gray-50 custom-scrollbar flex-1 min-h-0"
                         style="background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 0, 0.03) 20px, rgba(0, 0, 0, 0.03) 21px)"
+                        @click="hideToolbar"
                     >
                         <!-- 欢迎消息 -->
                         <div v-if="!currentSession?.messages.length" class="text-center py-16">
@@ -333,32 +356,53 @@
                                     <div class="w-8 h-8 bg-retro-blue border-2 border-black flex items-center justify-center text-white font-bold text-sm">🤖</div>
                                 </div>
 
-                                <!-- 消息气泡 -->
-                                <div
-                                    :class="[
-                                        'max-w-[70%] p-3 border-2 border-black font-bold text-sm',
-                                        message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
-                                    ]"
-                                >
-                                    <!-- 消息内容或加载动画 -->
-                                    <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
-                                        {{ message.content }}
-                                    </div>
+                                <!-- 消息气泡容器 -->
+                                <div :class="['max-w-[70%] relative', message.role === 'user' ? 'text-right' : 'text-left']">
+                                    <!-- 消息气泡 -->
                                     <div
-                                        v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading"
-                                        class="flex items-center gap-1"
+                                        :class="[
+                                            'p-3 border-2 border-black font-bold text-sm cursor-pointer',
+                                            message.role === 'user' ? 'bg-retro-pink text-white shadow-retro' : 'bg-white shadow-retro'
+                                        ]"
+                                        @click.stop="toggleToolbar(message.id)"
                                     >
-                                        <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
-                                        <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                                        <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                        <!-- 消息内容或加载动画 -->
+                                        <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
+                                            {{ message.content }}
+                                        </div>
+                                        <div
+                                            v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading"
+                                            class="flex items-center gap-1"
+                                        >
+                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
+                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                            <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                        </div>
+
+                                        <!-- 时间戳 -->
+                                        <div
+                                            v-if="message.content && message.content.trim()"
+                                            :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
+                                        >
+                                            {{ formatTime(message.timestamp) }}
+                                        </div>
                                     </div>
 
-                                    <!-- 时间戳 -->
+                                    <!-- 工具栏 -->
                                     <div
-                                        v-if="message.content && message.content.trim()"
-                                        :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
+                                        v-if="showToolbar === message.id && message.content && message.content.trim()"
+                                        :class="['mt-1 flex gap-1 animate-slide-up', message.role === 'user' ? 'justify-end' : 'justify-start']"
                                     >
-                                        {{ formatTime(message.timestamp) }}
+                                        <button
+                                            @click.stop="copyMessage(message.id, message.content)"
+                                            :class="[
+                                                'px-2 py-1 border-2 border-black font-bold text-xs shadow-retro hover:scale-105 transition-transform',
+                                                copySuccess === message.id ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-gray-100'
+                                            ]"
+                                            :title="copySuccess === message.id ? '已复制!' : '复制消息'"
+                                        >
+                                            {{ copySuccess === message.id ? '✓ 已复制' : '📋 复制' }}
+                                        </button>
                                     </div>
                                 </div>
 
@@ -716,6 +760,8 @@ const fullscreenMessagesContainer = ref<HTMLElement>()
 const showConfirmDialog = ref(false)
 const confirmAction = ref<() => void>(() => {})
 const isFullscreen = ref(false)
+const showToolbar = ref<string | null>(null) // 控制工具栏显示的消息ID
+const copySuccess = ref<string | null>(null) // 显示复制成功状态的消息ID
 
 // 方法
 const createNewSession = () => {
@@ -825,6 +871,44 @@ const resetAllConfig = () => {
 // 全屏功能
 const toggleFullscreen = () => {
     isFullscreen.value = !isFullscreen.value
+}
+
+// 复制功能
+const copyMessage = async (messageId: string, content: string) => {
+    try {
+        await navigator.clipboard.writeText(content)
+        copySuccess.value = messageId
+        setTimeout(() => {
+            copySuccess.value = null
+        }, 2000)
+    } catch (err) {
+        console.error('复制失败:', err)
+        // 降级方案：使用传统方法复制
+        const textArea = document.createElement('textarea')
+        textArea.value = content
+        document.body.appendChild(textArea)
+        textArea.select()
+        try {
+            document.execCommand('copy')
+            copySuccess.value = messageId
+            setTimeout(() => {
+                copySuccess.value = null
+            }, 2000)
+        } catch (fallbackErr) {
+            console.error('降级复制也失败:', fallbackErr)
+        }
+        document.body.removeChild(textArea)
+    }
+}
+
+// 显示/隐藏工具栏
+const toggleToolbar = (messageId: string) => {
+    showToolbar.value = showToolbar.value === messageId ? null : messageId
+}
+
+// 点击其他地方隐藏工具栏
+const hideToolbar = () => {
+    showToolbar.value = null
 }
 
 const formatTime = (timestamp: number) => {
