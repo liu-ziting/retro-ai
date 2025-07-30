@@ -1,19 +1,19 @@
 <template>
     <div :class="['w-full flex flex-col flex-1 lg:flex-none lg:h-auto', isFullscreen ? 'fixed inset-0 z-50 bg-white lg:col-span-4' : 'lg:col-span-3']">
         <!-- 聊天窗口 -->
-        <div class="bg-white lg:border-4 border-black lg:shadow-retro lg:mb-4 flex-1 lg:flex-none flex flex-col min-h-0">
+        <div class="bg-white lg:border-4 border-black lg:shadow-retro flex-1 lg:flex-none flex flex-col min-h-0">
             <!-- 桌面端标题栏 -->
             <div class="hidden lg:flex bg-black text-white px-2 py-1 text-sm font-bold mb-0 items-center justify-between">
                 <span>3. CHAT WINDOW</span>
                 <div class="flex items-center gap-2">
                     <span class="text-xs">{{ currentSession?.title || 'No Chat Selected' }}</span>
-                    <button
+                    <!-- <button
                         @click="$emit('toggle-fullscreen')"
                         class="bg-white text-black px-2 py-1 text-xs font-bold hover:bg-gray-200 border border-gray-300 rounded"
                         :title="isFullscreen ? '退出全屏' : '全屏'"
                     >
                         {{ isFullscreen ? '🗗' : '🗖' }}
-                    </button>
+                    </button> -->
                 </div>
             </div>
 

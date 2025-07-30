@@ -3,7 +3,7 @@
         <div class="bg-black text-white px-2 py-1 text-xs lg:text-sm font-bold mb-3 inline-block">
             {{ isMobile ? '对话历史' : '2. CHAT HISTORY' }}
         </div>
-        <div class="space-y-2 max-h-[22.5rem] overflow-y-scroll scrollbar-hide">
+        <div class="space-y-2 max-h-[21.2rem] overflow-y-scroll scrollbar-hide">
             <div
                 v-for="session in sessions"
                 :key="session.id"
