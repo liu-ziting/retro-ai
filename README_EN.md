@@ -2,7 +2,7 @@
 
 [中文版本](README.md) | [English Version](README_EN.md)
 
-![RetroBot Screenshot](/img.png)
+![RetroBot Screenshot](https://github.com/liu-ziting/retro-ai/blob/main/public/img.png?raw=true)
 
 > 🚀 **Vibe Coding**  
 > Developed using Kiro editor, implementing full-cycle development from requirements analysis, architecture design to code implementation.
