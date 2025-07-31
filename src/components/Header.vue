@@ -9,7 +9,7 @@
                 <h1 class="text-xl font-black text-white drop-shadow-lg font-mono tracking-wider flex items-center justify-center">
                     <span class="animate-pulse inline-block">💻</span>
                     <span class="mx-1">Retro</span>
-                    <span class="text-retro-yellow glow-text">Bot</span>
+                    <span class="text-cyan-300 glow-text mx-1">AI</span>
                     <span class="animate-pulse inline-block">🤖</span>
                 </h1>
             </div>
@@ -32,10 +32,9 @@
             <div>
                 <h1 class="text-4xl font-black text-white drop-shadow-lg font-mono tracking-wider relative flex items-center">
                     <span class="animate-pulse text-green-400 inline-block">▶</span>
-                    <span class="typewriter-container">
-                        <span class="typewriter">RETRO</span>
-                    </span>
-                    <span class="text-retro-yellow glow-text">BOT</span>
+                    <span class="typewriter">RETRO</span>
+                    <span class="text-cyan-300 glow-text mx-2">BOT</span>
+                    <span class="cursor-blink">█</span>
                     <span class="animate-pulse inline-block ml-2">🖥️</span>
                     <span class="absolute -top-1 -right-8 text-sm animate-ping">●</span>
                 </h1>
@@ -92,10 +91,14 @@ defineEmits<{
     }
 }
 
-.typewriter-container {
-    display: inline-block;
-    position: relative;
-    min-width: 120px; /* 固定宽度防止布局跳动 */
+@keyframes ai-glow {
+    0%,
+    100% {
+        text-shadow: 2px 2px 0px #000, 4px 4px 0px rgba(0, 0, 0, 0.3), 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    50% {
+        text-shadow: 2px 2px 0px #000, 4px 4px 0px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6);
+    }
 }
 
 .typewriter {
@@ -104,15 +107,20 @@ defineEmits<{
 }
 
 /* 复古电脑风格的闪烁光标 */
-.typewriter::after {
-    content: '█';
+.cursor-blink {
+    display: inline-block;
     animation: blink 1s infinite;
     color: #00ff00;
-    margin-left: 2px;
+    margin-left: 4px;
+    text-shadow: 0 0 10px #00ff00;
 }
 
 .glow-text {
     animation: glow 2s ease-in-out infinite;
+}
+
+.text-cyan-300.glow-text {
+    animation: ai-glow 1.5s ease-in-out infinite;
 }
 
 /* 增强阴影效果 */
