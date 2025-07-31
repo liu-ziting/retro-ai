@@ -4,7 +4,7 @@
         <div class="w-80 max-w-[85vw] h-full bg-retro-yellow border-r-4 border-black shadow-retro p-4 overflow-y-auto" @click.stop>
             <!-- 抽屉头部 -->
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold">菜单</h2>
+                <h2 class="text-xl font-bold">历史记录</h2>
                 <button @click="$emit('close-sidebar')" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro">✕</button>
             </div>
 
