@@ -4,6 +4,7 @@ import OpenAI from 'openai'
 import type { ChatSession, Message, ApiConfig, Statistics, DailyStats } from '@/types'
 import { DEFAULT_SYSTEM_PROMPT, SYSTEM_PROMPTS, type SystemPromptType } from '@/config/prompts'
 import { getDefaultApiConfig, validateApiConfig, getDefaultStatistics } from '@/utils/configUtils'
+import { notifyError, notifyWarning } from '@/utils/notification'
 
 export const useChatStore = defineStore('chat', () => {
     // 状态
@@ -110,6 +111,7 @@ export const useChatStore = defineStore('chat', () => {
         const validation = validateApiConfig(config)
         if (!validation.valid) {
             console.error('配置验证失败:', validation.errors)
+            notifyError('配置验证失败', validation.errors.join(', '))
             throw new Error(validation.errors.join(', '))
         }
         apiConfig.value = { ...apiConfig.value, ...config }
@@ -211,6 +213,7 @@ export const useChatStore = defineStore('chat', () => {
         if (!currentSession.value) return
         if (!apiConfig.value.apiKey) {
             console.error('API Key is required')
+            notifyWarning('API Key未配置', '请先在设置中配置API Key')
             return
         }
 
@@ -295,6 +298,25 @@ export const useChatStore = defineStore('chat', () => {
             saveToStorage()
         } catch (error) {
             console.error('API调用失败:', error)
+
+            // 显示错误通知
+            let errorMessage = 'API调用失败'
+            let errorDescription = '请检查网络连接和API配置'
+
+            if (error instanceof Error) {
+                if (error.message.includes('401')) {
+                    errorMessage = 'API Key无效'
+                    errorDescription = '请检查API Key是否正确'
+                } else if (error.message.includes('429')) {
+                    errorMessage = '请求过于频繁'
+                    errorDescription = '请稍后再试'
+                } else if (error.message.includes('network')) {
+                    errorMessage = '网络连接失败'
+                    errorDescription = '请检查网络连接'
+                }
+            }
+
+            notifyError(errorMessage, errorDescription)
 
             // 错误处理 - 显示错误消息
             if (aiMessage && currentSession.value) {

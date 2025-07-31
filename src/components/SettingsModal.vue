@@ -51,12 +51,12 @@
                                         v-model.number="localConfig.temperature"
                                         type="number"
                                         min="0"
-                                        max="2"
+                                        max="1"
                                         step="0.1"
                                         placeholder="0.7"
                                         class="w-full p-2 border-2 border-black font-bold text-xs focus:outline-none focus:ring-2 focus:ring-retro-yellow"
                                     />
-                                    <div class="text-xs text-gray-600 mt-1">控制回复的随机性 (0-2，推荐0.7)</div>
+                                    <div class="text-xs text-gray-600 mt-1">控制回复的随机性 (0-1，推荐0.7)</div>
                                 </div>
                             </div>
                         </div>

@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { notifySuccess, notifyError } from '../utils/notification'
 import type { Message } from '../types/chat'
 
 interface Props {
@@ -88,6 +89,7 @@ const copyMessage = async () => {
     try {
         await navigator.clipboard.writeText(props.message.content)
         copySuccess.value = true
+        notifySuccess('消息已复制', '内容已复制到剪贴板')
         setTimeout(() => {
             copySuccess.value = false
         }, 2000)
@@ -101,11 +103,13 @@ const copyMessage = async () => {
         try {
             document.execCommand('copy')
             copySuccess.value = true
+            notifySuccess('消息已复制', '内容已复制到剪贴板')
             setTimeout(() => {
                 copySuccess.value = false
             }, 2000)
         } catch (fallbackErr) {
             console.error('降级复制也失败:', fallbackErr)
+            notifyError('复制失败', '无法复制到剪贴板，请手动选择复制')
         }
         document.body.removeChild(textArea)
     }

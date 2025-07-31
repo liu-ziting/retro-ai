@@ -50,6 +50,9 @@
         <StatisticsModal :show="showStatistics" :stats="realTimeStats" @close="showStatistics = false" />
 
         <ConfirmDialog :show="showConfirmDialog" @confirm="executeConfirm" @cancel="showConfirmDialog = false" />
+
+        <!-- 全局通知组件 -->
+        <NotificationToast ref="notificationRef" />
     </div>
 </template>
 
@@ -64,6 +67,8 @@ import ChatWindow from './components/ChatWindow.vue'
 import SettingsModal from './components/SettingsModal.vue'
 import StatisticsModal from './components/StatisticsModal.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
+import NotificationToast from './components/NotificationToast.vue'
+import { setNotificationInstance, notifySuccess } from './utils/notification'
 import type { ApiConfig } from './types/chat'
 
 const chatStore = useChatStore()
@@ -77,6 +82,7 @@ const confirmAction = ref<() => void>(() => {})
 const isFullscreen = ref(false)
 const showToolbar = ref<string | null>(null)
 const chatWindowRef = ref()
+const notificationRef = ref()
 
 // 基础方法
 const createNewSession = () => {
@@ -146,14 +152,14 @@ const executeConfirm = () => {
 const resetApiConfig = () => {
     showConfirm(() => {
         chatStore.resetApiConfig()
-        window.alert('API配置已重置！')
+        notifySuccess('API配置已重置！', '配置已恢复为默认值')
     })
 }
 
 const resetSessions = () => {
     showConfirm(() => {
         chatStore.resetSessions()
-        window.alert('对话记录已清空！')
+        notifySuccess('对话记录已清空！', '所有历史对话已被删除')
     })
 }
 
@@ -196,5 +202,10 @@ watch(
 onMounted(() => {
     chatStore.loadFromStorage()
     scrollToBottom()
+
+    // 设置全局通知实例
+    if (notificationRef.value) {
+        setNotificationInstance(notificationRef.value)
+    }
 })
 </script>
