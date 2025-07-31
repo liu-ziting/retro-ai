@@ -424,9 +424,3 @@ npm run preview
 -   使用 ESLint 和 Prettier 保持代码风格一致
 -   组件命名使用 PascalCase
 -   文件命名使用 kebab-case
-
-### 提交规范
-
--   使用语义化提交信息
--   格式：`type(scope): description`
--   类型：feat, fix, docs, style, refactor
