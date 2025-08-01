@@ -6,7 +6,7 @@
         </div>
 
         <!-- 主要内容区域 - 占满剩余高度 -->
-        <div class="flex-1 flex flex-col min-h-0 lg:p-4">
+        <div class="flex-1 flex flex-col min-h-0">
             <!-- PC端容器 -->
             <div class="w-full lg:max-w-6xl lg:mx-auto flex-1 flex flex-col min-h-0">
                 <div class="flex flex-col lg:grid lg:grid-cols-4 lg:gap-4 flex-1 min-h-0" :class="{ hidden: isFullscreen }">

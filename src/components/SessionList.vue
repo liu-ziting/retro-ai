@@ -31,7 +31,7 @@
                 @click="$emit('reset-sessions')"
                 class="w-full px-2 lg:px-3 py-2 bg-retro-orange border-2 border-black font-bold text-white hover:bg-orange-400 shadow-retro text-xs lg:text-sm flex items-center justify-center gap-2"
             >
-                <span>🗑️</span> 清空{{ isMobile ? '记录' : '对话记录' }}
+                <span>🗑️</span> Clear Conversation Log
             </button>
         </div>
     </div>

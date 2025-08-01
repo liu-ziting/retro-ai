@@ -6,15 +6,15 @@
                 <button @click="$emit('close')" class="bg-white border-2 border-black px-2 py-1 text-sm font-bold hover:bg-gray-100 shadow-retro text-black">✕</button>
             </div>
 
-            <!-- 可滚动内容区域 -->
+            <!-- Scrollable content area -->
             <div class="flex-1 overflow-y-auto min-h-0">
                 <div class="p-6">
-                    <!-- PC端左右布局，移动端上下布局 -->
+                    <!-- Desktop: left-right layout, Mobile: top-bottom layout -->
                     <div class="flex flex-col lg:flex-row lg:items-stretch gap-6 max-w-6xl mx-auto">
-                        <!-- 左侧：基本配置 -->
+                        <!-- Left side: Basic Configuration -->
                         <div class="flex-1">
                             <div class="bg-gray-50 p-4 border-2 border-gray-200 rounded h-full">
-                                <h4 class="font-bold text-sm mb-4 text-gray-700">🔧 基本配置</h4>
+                                <h4 class="font-bold text-sm mb-4 text-gray-700">🔧 Basic Configuration</h4>
 
                                 <div class="space-y-4">
                                     <div>
@@ -32,10 +32,10 @@
                                         <input
                                             v-model="localConfig.baseUrl"
                                             type="text"
-                                            placeholder="请填写 chat/completions 之前的接口地址，如：https://api.deepseek.com"
+                                            placeholder="Enter the API endpoint before chat/completions, e.g.: https://api.deepseek.com"
                                             class="w-full p-2 border-2 border-black font-bold text-xs focus:outline-none focus:ring-2 focus:ring-retro-yellow"
                                         />
-                                        <div class="text-xs text-gray-600 mt-1">请填写 chat/completions 之前的接口地址</div>
+                                        <div class="text-xs text-gray-600 mt-1">Enter the API endpoint before chat/completions</div>
                                     </div>
 
                                     <div>
@@ -43,7 +43,7 @@
                                         <input
                                             v-model="localConfig.model"
                                             type="text"
-                                            placeholder="输入模型名称，如：deepseek-chat"
+                                            placeholder="Enter model name, e.g.: deepseek-chat"
                                             class="w-full p-2 border-2 border-black font-bold text-xs focus:outline-none focus:ring-2 focus:ring-retro-yellow"
                                         />
                                     </div>
@@ -59,26 +59,26 @@
                                             placeholder="0.7"
                                             class="w-full p-2 border-2 border-black font-bold text-xs focus:outline-none focus:ring-2 focus:ring-retro-yellow"
                                         />
-                                        <div class="text-xs text-gray-600 mt-1">控制回复的随机性 (0-1，推荐0.7)</div>
+                                        <div class="text-xs text-gray-600 mt-1">Controls response randomness (0-1, recommended 0.7)</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- 右侧：系统提示词 -->
+                        <!-- Right side: System Prompt -->
                         <div class="flex-1">
                             <div class="bg-gray-50 p-4 border-2 border-gray-200 rounded h-full">
-                                <h4 class="font-bold text-sm mb-4 text-gray-700">💬 系统提示词</h4>
+                                <h4 class="font-bold text-sm mb-4 text-gray-700">💬 System Prompt</h4>
 
-                                <!-- 预设选择按钮 -->
+                                <!-- Preset selection buttons -->
                                 <div class="mb-4">
-                                    <div class="text-xs font-bold mb-2 text-gray-700">📋 快速预设：</div>
+                                    <div class="text-xs font-bold mb-2 text-gray-700">📋 Quick Presets:</div>
                                     <div class="grid grid-cols-2 gap-2">
                                         <button
                                             @click="selectPromptPreset('default')"
                                             class="px-2 py-1 bg-retro-pink border-2 border-black font-bold text-white text-xs hover:bg-pink-400 shadow-retro"
                                         >
-                                            🕹️ 复古
+                                            🕹️ Retro
                                         </button>
                                         <button
                                             @click="selectPromptPreset('fuck')"
@@ -90,19 +90,19 @@
                                             @click="selectPromptPreset('coding')"
                                             class="px-2 py-1 bg-retro-blue border-2 border-black font-bold text-white text-xs hover:bg-blue-400 shadow-retro"
                                         >
-                                            💻 编程
+                                            💻 Coding
                                         </button>
                                         <button
                                             @click="selectPromptPreset('creative')"
                                             class="px-2 py-1 bg-retro-purple border-2 border-black font-bold text-white text-xs hover:bg-purple-400 shadow-retro"
                                         >
-                                            🎨 创意
+                                            🎨 Creative
                                         </button>
                                         <button
                                             @click="selectPromptPreset('casual')"
                                             class="px-2 py-1 bg-retro-orange border-2 border-black font-bold text-white text-xs hover:bg-orange-400 shadow-retro col-span-2"
                                         >
-                                            😊 随和
+                                            😊 Casual
                                         </button>
                                     </div>
                                 </div>
@@ -110,11 +110,11 @@
                                 <div>
                                     <textarea
                                         v-model="localConfig.systemPrompt"
-                                        placeholder="输入系统提示词，如：你是一个有用的AI助手..."
+                                        placeholder="Enter system prompt, e.g.: You are a helpful AI assistant..."
                                         rows="7"
                                         class="w-full p-2 border-2 border-black font-bold text-xs resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow"
                                     ></textarea>
-                                    <div class="text-xs text-gray-600 mt-2">设置AI的角色和行为方式，或点击上方预设快速选择</div>
+                                    <div class="text-xs text-gray-600 mt-2">Set AI's role and behavior, or click presets above for quick selection</div>
                                 </div>
                             </div>
                         </div>
@@ -122,12 +122,14 @@
                 </div>
             </div>
 
-            <!-- 底部按钮 -->
+            <!-- Bottom buttons -->
             <div class="border-t-4 border-black p-4 bg-gray-100 flex gap-3 justify-between flex-shrink-0">
                 <button @click="$emit('reset-config')" class="px-4 py-2 bg-retro-blue border-2 border-black font-bold text-white hover:bg-blue-400 shadow-retro text-sm">
-                    🔧 重置API配置
+                    🔧 Reset API Config
                 </button>
-                <button @click="saveSettings" class="px-6 py-2 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 shadow-retro text-sm">保存设置</button>
+                <button @click="saveSettings" class="px-6 py-2 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 shadow-retro text-sm">
+                    Save Settings
+                </button>
             </div>
         </div>
     </div>

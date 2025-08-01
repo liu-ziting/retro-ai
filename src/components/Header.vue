@@ -43,8 +43,8 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                <button @click="$emit('toggle-statistics')" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">📊 统计</button>
-                <button @click="$emit('toggle-settings')" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">⚙️ 配置</button>
+                <button @click="$emit('toggle-statistics')" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">📊 Stats</button>
+                <button @click="$emit('toggle-settings')" class="bg-white border-2 border-black px-3 py-1 text-xs font-bold hover:bg-gray-100 shadow-retro">⚙️ Setup</button>
             </div>
         </div>
     </div>

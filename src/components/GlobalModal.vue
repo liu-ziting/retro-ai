@@ -2,7 +2,7 @@
     <Transition name="modal">
         <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div class="bg-retro-yellow border-4 border-black shadow-retro p-6 max-w-md mx-4 relative animate-slide-up font-retro">
-                <!-- 关闭按钮 -->
+                <!-- Close button -->
                 <button
                     @click="closeModal"
                     class="absolute top-2 right-2 w-6 h-6 bg-black text-retro-yellow font-bold text-sm hover:bg-gray-800 transition-colors flex items-center justify-center"
@@ -10,25 +10,26 @@
                     ×
                 </button>
 
-                <!-- 弹窗内容 -->
+                <!-- Modal content -->
                 <div class="text-center">
-                    <div class="text-lg font-bold mb-4 text-black">🤖 系统信息</div>
+                    <div class="text-lg font-bold mb-4 text-black">🤖 System Information</div>
                     <div class="text-sm text-black leading-relaxed mb-4 bg-white border-2 border-black p-3 shadow-retro-inset">
-                        本系统由Kiro编辑器自主完成，人类仅提供概念指令，未直接参与任何代码实现。<br />
-                        <span class="text-xs opacity-70">// 指令作者：https://github.com/liu-ziting/</span>
+                        This system was autonomously completed by <b>Kiro</b> Editor. Humans only provided conceptual instructions and did not directly participate in any code
+                        implementation.<br />
+                        <span class="text-xs opacity-70">Author: https://github.com/liu-ziting/</span>
                     </div>
                     <div class="text-xs text-gray-700 text-right italic mb-4">——Kiro Editor @1983</div>
 
-                    <!-- 按钮组 -->
+                    <!-- Button group -->
                     <div class="flex gap-3 justify-center">
                         <button @click="closeModal" class="px-4 py-2 bg-white border-2 border-black shadow-retro text-black font-bold text-sm hover:bg-gray-100 transition-colors">
-                            关闭
+                            Close
                         </button>
                         <button
                             @click="closeAndDontShowToday"
                             class="px-4 py-2 bg-black border-2 border-black shadow-retro text-retro-yellow font-bold text-sm hover:bg-gray-800 transition-colors"
                         >
-                            今日不再弹出
+                            Don't show today
                         </button>
                     </div>
                 </div>
@@ -43,7 +44,7 @@ import { ref, onMounted } from 'vue'
 const show = ref(false)
 const STORAGE_KEY = 'kiro-modal-dont-show-today'
 
-// 检查今天是否已经选择不再显示
+// Check if user chose not to show today
 const shouldShowToday = () => {
     const stored = localStorage.getItem(STORAGE_KEY)
     if (!stored) return true
@@ -51,7 +52,7 @@ const shouldShowToday = () => {
     const storedDate = new Date(stored)
     const today = new Date()
 
-    // 检查是否是同一天
+    // Check if it's the same day
     return storedDate.toDateString() !== today.toDateString()
 }
 
@@ -60,7 +61,7 @@ const closeModal = () => {
 }
 
 const closeAndDontShowToday = () => {
-    // 保存今天的日期到localStorage
+    // Save today's date to localStorage
     localStorage.setItem(STORAGE_KEY, new Date().toISOString())
     show.value = false
 }
@@ -69,16 +70,16 @@ const openModal = () => {
     show.value = true
 }
 
-// 页面加载时检查是否应该显示弹窗
+// Check if modal should be shown when page loads
 onMounted(() => {
     if (shouldShowToday()) {
         setTimeout(() => {
             show.value = true
-        }, 1000) // 延迟1秒显示
+        }, 1000) // Show after 1 second delay
     }
 })
 
-// 暴露方法给父组件
+// Expose methods to parent component
 defineExpose({
     openModal,
     closeModal

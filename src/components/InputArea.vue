@@ -5,7 +5,7 @@
             <textarea
                 v-model="inputMessage"
                 @keydown.enter.prevent="handleSend"
-                placeholder="输入消息..."
+                placeholder="Input message..."
                 :disabled="isLoading"
                 rows="2"
                 class="flex-1 p-2 lg:p-3 border-2 border-black font-bold text-sm resize-none focus:outline-none focus:ring-2 focus:ring-retro-yellow disabled:bg-gray-200"
@@ -15,7 +15,7 @@
                 :disabled="!inputMessage.trim() || isLoading"
                 class="px-3 lg:px-6 py-2 lg:py-3 bg-retro-green border-2 border-black font-bold text-white hover:bg-green-400 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-retro text-sm"
             >
-                {{ isLoading ? '发送中...' : '发送' }}
+                {{ isLoading ? 'Sending...' : 'Send' }}
             </button>
         </div>
     </div>
