@@ -59,6 +59,9 @@
 
         <!-- 全局通知组件 -->
         <NotificationToast ref="notificationRef" />
+
+        <!-- 全局弹窗组件 -->
+        <GlobalModal ref="globalModalRef" />
     </div>
 </template>
 
@@ -74,6 +77,7 @@ import SettingsModal from './components/SettingsModal.vue'
 import StatisticsModal from './components/StatisticsModal.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
 import NotificationToast from './components/NotificationToast.vue'
+import GlobalModal from './components/GlobalModal.vue'
 import { setNotificationInstance, notifySuccess } from './utils/notification'
 import type { ApiConfig } from './types/chat'
 
@@ -89,6 +93,7 @@ const isFullscreen = ref(false)
 const showToolbar = ref<string | null>(null)
 const chatWindowRef = ref()
 const notificationRef = ref()
+const globalModalRef = ref()
 
 // 基础方法
 const createNewSession = () => {
