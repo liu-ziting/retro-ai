@@ -1,14 +1,14 @@
 <template>
     <div class="mb-3 lg:mb-4 animate-slide-up">
         <div :class="['flex gap-2 lg:gap-3', message.role === 'user' ? 'justify-end' : 'justify-start']">
-            <!-- AI头像 -->
+            <!-- AI Avatar -->
             <div v-if="message.role === 'assistant'" class="flex-shrink-0">
                 <div class="w-6 h-6 lg:w-8 lg:h-8 bg-retro-blue border-2 border-black flex items-center justify-center text-white font-bold text-xs lg:text-sm">🤖</div>
             </div>
 
-            <!-- 消息气泡容器 -->
+            <!-- Message bubble container -->
             <div :class="['max-w-[85%] lg:max-w-[70%] relative', message.role === 'user' ? 'text-right' : 'text-left']">
-                <!-- 消息气泡 -->
+                <!-- Message bubble -->
                 <div
                     :class="[
                         'p-2 lg:p-3 border-2 border-black font-bold text-xs lg:text-sm cursor-pointer',
@@ -16,7 +16,7 @@
                     ]"
                     @click.stop="toggleToolbar"
                 >
-                    <!-- 消息内容或加载动画 -->
+                    <!-- Message content or loading animation -->
                     <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
                         {{ message.content }}
                     </div>
@@ -26,7 +26,7 @@
                         <div class="w-2 h-2 bg-black rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                     </div>
 
-                    <!-- 时间戳 -->
+                    <!-- Timestamp -->
                     <div
                         v-if="message.content && message.content.trim()"
                         :class="['text-xs mt-2 opacity-75', message.role === 'user' ? 'text-right text-white' : 'text-left text-gray-600']"
@@ -35,7 +35,7 @@
                     </div>
                 </div>
 
-                <!-- 工具栏 -->
+                <!-- Toolbar -->
                 <div
                     v-if="showToolbar && message.content && message.content.trim()"
                     :class="['mt-1 flex gap-1 animate-slide-up', message.role === 'user' ? 'justify-end' : 'justify-start']"
@@ -46,14 +46,14 @@
                             'px-2 py-1 border-2 border-black font-bold text-xs shadow-retro hover:scale-105 transition-transform',
                             copySuccess ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-gray-100'
                         ]"
-                        :title="copySuccess ? '已复制!' : '复制消息'"
+                        :title="copySuccess ? 'Copied!' : 'Copy Message'"
                     >
-                        {{ copySuccess ? '✓ 已复制' : '📋 复制' }}
+                        {{ copySuccess ? '✓ Copied' : '📋 Copy' }}
                     </button>
                 </div>
             </div>
 
-            <!-- 用户头像 -->
+            <!-- User Avatar -->
             <div v-if="message.role === 'user'" class="flex-shrink-0">
                 <div class="w-6 h-6 lg:w-8 lg:h-8 bg-retro-green border-2 border-black flex items-center justify-center text-white font-bold text-xs lg:text-sm">👤</div>
             </div>
@@ -89,13 +89,13 @@ const copyMessage = async () => {
     try {
         await navigator.clipboard.writeText(props.message.content)
         copySuccess.value = true
-        notifySuccess('消息已复制', '内容已复制到剪贴板')
+        notifySuccess('Message Copied', 'Content copied to clipboard')
         setTimeout(() => {
             copySuccess.value = false
         }, 2000)
     } catch (err) {
-        console.error('复制失败:', err)
-        // 降级方案
+        console.error('Copy failed:', err)
+        // Fallback solution
         const textArea = document.createElement('textarea')
         textArea.value = props.message.content
         document.body.appendChild(textArea)
@@ -103,13 +103,13 @@ const copyMessage = async () => {
         try {
             document.execCommand('copy')
             copySuccess.value = true
-            notifySuccess('消息已复制', '内容已复制到剪贴板')
+            notifySuccess('Message Copied', 'Content copied to clipboard')
             setTimeout(() => {
                 copySuccess.value = false
             }, 2000)
         } catch (fallbackErr) {
-            console.error('降级复制也失败:', fallbackErr)
-            notifyError('复制失败', '无法复制到剪贴板，请手动选择复制')
+            console.error('Fallback copy also failed:', fallbackErr)
+            notifyError('Copy Failed', 'Unable to copy to clipboard, please manually select and copy')
         }
         document.body.removeChild(textArea)
     }
