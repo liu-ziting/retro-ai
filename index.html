@@ -1,41 +1,53 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
-        <!-- 页面标题和描述 -->
-        <title>RetroBot - 复古风格AI智能对话助手</title>
-        <meta name="description" content="RetroBot是一款具有复古像素风格的AI智能对话助手，支持多种AI模型，提供编程、创意、学术等多种对话模式，让AI对话更有趣味性。" />
-        <meta name="keywords" content="AI对话,智能助手,复古风格,像素风,ChatGPT,AI聊天,人工智能,编程助手,创意写作" />
+        <!-- Page title and description -->
+        <title>RetroBot - Retro Style AI Intelligent Conversation Assistant</title>
+        <meta
+            name="description"
+            content="RetroBot is an AI intelligent conversation assistant with retro pixel style, supporting multiple AI models and providing various conversation modes for programming, creativity, academics, making AI conversations more interesting."
+        />
+        <meta
+            name="keywords"
+            content="AI conversation,intelligent assistant,retro style,pixel art,ChatGPT,AI chat,artificial intelligence,programming assistant,creative writing"
+        />
         <meta name="author" content="Liuziting" />
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://retro-ai.example.com/" />
-        <meta property="og:title" content="RetroBot - 复古风格AI智能对话助手" />
-        <meta property="og:description" content="体验独特的复古像素风格AI对话界面，支持多种AI模型和对话模式，让智能对话更加有趣。" />
+        <meta property="og:title" content="RetroBot - Retro Style AI Intelligent Conversation Assistant" />
+        <meta
+            property="og:description"
+            content="Experience a unique retro pixel-style AI conversation interface, supporting multiple AI models and conversation modes, making intelligent conversations more interesting."
+        />
         <meta property="og:image" content="/og-image.png" />
 
         <!-- Twitter -->
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://retro-ai.example.com/" />
-        <meta property="twitter:title" content="RetroBot - 复古风格AI智能对话助手" />
-        <meta property="twitter:description" content="体验独特的复古像素风格AI对话界面，支持多种AI模型和对话模式，让智能对话更加有趣。" />
+        <meta property="twitter:title" content="RetroBot - Retro Style AI Intelligent Conversation Assistant" />
+        <meta
+            property="twitter:description"
+            content="Experience a unique retro pixel-style AI conversation interface, supporting multiple AI models and conversation modes, making intelligent conversations more interesting."
+        />
         <meta property="twitter:image" content="/og-image.png" />
 
-        <!-- 移动端优化 -->
+        <!-- Mobile optimization -->
         <meta name="theme-color" content="#FFD700" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="RetroBot" />
 
-        <!-- 预加载关键资源 -->
+        <!-- Preload critical resources -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-        <!-- 防止页面缩放 -->
+        <!-- Prevent page scaling -->
         <style>
             html,
             body {
@@ -44,7 +56,7 @@
                 -ms-text-size-adjust: 100%;
             }
 
-            /* 加载动画 */
+            /* Loading animation */
             .loading {
                 position: fixed;
                 top: 0;
@@ -77,7 +89,7 @@
         </style>
     </head>
     <body>
-        <!-- 加载动画 -->
+        <!-- Loading animation -->
         <div class="loading" id="loading">
             <div class="loading-text">🤖 RetroBot Loading...</div>
         </div>
@@ -86,7 +98,7 @@
 
         <script type="module" src="/src/main.ts"></script>
 
-        <!-- 移除加载动画 -->
+        <!-- Remove loading animation -->
         <script>
             window.addEventListener('load', function () {
                 setTimeout(function () {
