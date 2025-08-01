@@ -115,37 +115,37 @@ const handleSend = async (message: string) => {
 
 const saveSettings = (config: ApiConfig) => {
     chatStore.updateApiConfig(config)
-    // 保存设置后自动创建新对话，确保新设置生效
+    // Automatically create new conversation after saving settings to ensure new settings take effect
     chatStore.createSession()
 }
 
 // 获取当前预设标题
 const getCurrentPresetTitle = () => {
     const currentPrompt = apiConfig.value.systemPrompt
-    if (!currentPrompt) return '自定义'
+    if (!currentPrompt) return 'Custom'
 
     // 检查是否匹配预设
     for (const [key, value] of Object.entries(SYSTEM_PROMPTS)) {
         if (value === currentPrompt) {
             switch (key) {
                 case 'default':
-                    return '🕹️ 复古'
+                    return '🕹️ Retro'
                 case 'fuck':
                     return '🔥 Fuck'
                 case 'coding':
-                    return '💻 编程'
+                    return '💻 Coding'
                 case 'creative':
-                    return '🎨 创意'
+                    return '🎨 Creative'
                 case 'academic':
-                    return '� 学术'
+                    return '📚 Academic'
                 case 'casual':
-                    return '😊 随和'
+                    return '😊 Casual'
                 default:
-                    return '自定义'
+                    return 'Custom'
             }
         }
     }
-    return '自定义'
+    return 'Custom'
 }
 
 // 确认对话框
@@ -163,14 +163,14 @@ const executeConfirm = () => {
 const resetApiConfig = () => {
     showConfirm(() => {
         chatStore.resetApiConfig()
-        notifySuccess('API配置已重置！', '配置已恢复为默认值')
+        notifySuccess('API Config Reset!', 'Configuration has been restored to default values')
     })
 }
 
 const resetSessions = () => {
     showConfirm(() => {
         chatStore.resetSessions()
-        notifySuccess('对话记录已清空！', '所有历史对话已被删除')
+        notifySuccess('Chat History Cleared!', 'All conversation history has been deleted')
     })
 }
 
@@ -188,7 +188,7 @@ const hideToolbar = () => {
 }
 
 const copyMessage = (messageId: string, content: string) => {
-    // 复制逻辑由 MessageItem 组件处理
+    // Copy logic is handled by MessageItem component
 }
 
 const scrollToBottom = () => {
