@@ -1,7 +1,7 @@
 <template>
-    <div :class="['w-full flex flex-col flex-1 lg:flex-none lg:h-auto', isFullscreen ? 'fixed inset-0 z-50 bg-white lg:col-span-4' : 'lg:col-span-3']">
+    <div :class="['w-full flex flex-col flex-1 min-h-0', isFullscreen ? 'fixed inset-0 z-50 bg-white lg:col-span-4' : 'lg:col-span-3']">
         <!-- 聊天窗口 -->
-        <div class="bg-white lg:border-4 border-black lg:shadow-retro flex-1 lg:flex-none flex flex-col min-h-0">
+        <div class="bg-white lg:border-4 border-black lg:shadow-retro flex-1 flex flex-col min-h-0 overflow-hidden">
             <!-- 桌面端标题栏 -->
             <div class="hidden lg:flex bg-black text-white px-2 py-1 text-sm font-bold mb-0 items-center justify-between">
                 <span>3. CHAT WINDOW</span>
@@ -28,7 +28,7 @@
 
             <div
                 ref="messagesContainer"
-                :class="['overflow-y-auto p-2 lg:p-4 bg-gray-50 custom-scrollbar pb-20 lg:pb-4', isFullscreen ? 'h-[calc(100vh-200px)]' : 'h-[calc(100vh-115px)] lg:h-96']"
+                class="overflow-y-auto p-2 lg:p-4 bg-gray-50 custom-scrollbar messages-container"
                 style="background-image: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0, 0, 0, 0.03) 20px, rgba(0, 0, 0, 0.03) 21px)"
                 @click="$emit('hide-toolbar')"
             >
@@ -53,7 +53,9 @@
         </div>
 
         <!-- InputArea 组件 -->
-        <InputArea :is-loading="isLoading" @send-message="$emit('send-message', $event)" />
+        <div class="flex-shrink-0">
+            <InputArea :is-loading="isLoading" @send-message="$emit('send-message', $event)" />
+        </div>
     </div>
 </template>
 

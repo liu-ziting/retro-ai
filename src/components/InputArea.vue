@@ -1,7 +1,5 @@
 <template>
-    <div
-        class="bg-retro-purple lg:border-4 border-black lg:shadow-retro p-2 lg:p-4 border-t-2 lg:border-t-0 flex-shrink-0 lg:relative fixed lg:static bottom-0 left-0 right-0 lg:bottom-auto lg:left-auto lg:right-auto z-20 lg:mt-4"
-    >
+    <div class="bg-retro-purple lg:border-4 border-black lg:shadow-retro p-2 lg:p-4 border-t-2 lg:border-t-0 lg:mt-4">
         <div class="hidden lg:inline-block bg-black text-white px-2 py-1 text-sm font-bold mb-3">4. TYPE MESSAGE</div>
         <div class="flex gap-2 lg:gap-3">
             <textarea

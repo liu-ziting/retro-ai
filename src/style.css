@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 消息容器动态高度 */
+.messages-container {
+    height: 0;
+    flex-grow: 1;
+    min-height: 0;
+}
+
 /* 自定义滚动条 */
 .custom-scrollbar::-webkit-scrollbar {
     @apply w-1;
@@ -86,14 +93,15 @@
     }
 }
 
-/* 确保全屏高度 */
+/* 确保全屏高度和背景色 */
 html,
 body {
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
+    background-color: #e1b978; /* retro-yellow 的颜色值 */
 }
 
 #app {
     height: 100vh;
-    min-height: 100vh;
+    overflow: hidden;
 }

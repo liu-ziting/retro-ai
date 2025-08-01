@@ -1,45 +1,51 @@
 <template>
-    <div class="h-screen lg:h-auto bg-retro-yellow font-retro relative flex flex-col lg:block lg:min-h-screen lg:p-4">
-        <!-- Header 组件 -->
-        <Header @toggle-sidebar="showSidebar = !showSidebar" @toggle-statistics="showStatistics = !showStatistics" @toggle-settings="showSettings = !showSettings" />
+    <div class="h-screen bg-retro-yellow font-retro relative flex flex-col overflow-hidden">
+        <!-- Header 组件 - 固定在顶部 -->
+        <div class="flex-shrink-0">
+            <Header @toggle-sidebar="showSidebar = !showSidebar" @toggle-statistics="showStatistics = !showStatistics" @toggle-settings="showSettings = !showSettings" />
+        </div>
 
-        <!-- PC端容器 -->
-        <div class="w-full lg:max-w-6xl lg:mx-auto p-0 flex-1 lg:flex-none flex flex-col lg:block">
-            <div class="flex flex-col lg:grid lg:grid-cols-4 lg:gap-4 flex-1 lg:flex-none" :class="{ hidden: isFullscreen }">
-                <!-- Sidebar 组件 -->
-                <Sidebar
-                    :show-sidebar="showSidebar"
-                    :is-fullscreen="isFullscreen"
-                    :sorted-sessions="sortedSessions"
-                    :current-session-id="currentSessionId"
-                    @close-sidebar="showSidebar = false"
-                    @create-session="createNewSession"
-                    @select-session="selectSession"
-                    @delete-session="deleteSession"
-                    @reset-sessions="resetSessions"
-                />
+        <!-- 主要内容区域 - 占满剩余高度 -->
+        <div class="flex-1 flex flex-col min-h-0 lg:p-4">
+            <!-- PC端容器 -->
+            <div class="w-full lg:max-w-6xl lg:mx-auto flex-1 flex flex-col min-h-0">
+                <div class="flex flex-col lg:grid lg:grid-cols-4 lg:gap-4 flex-1 min-h-0" :class="{ hidden: isFullscreen }">
+                    <!-- Sidebar 组件 -->
+                    <Sidebar
+                        :show-sidebar="showSidebar"
+                        :is-fullscreen="isFullscreen"
+                        :sorted-sessions="sortedSessions"
+                        :current-session-id="currentSessionId"
+                        @close-sidebar="showSidebar = false"
+                        @create-session="createNewSession"
+                        @select-session="selectSession"
+                        @delete-session="deleteSession"
+                        @reset-sessions="resetSessions"
+                    />
 
-                <!-- ChatWindow 组件 -->
-                <ChatWindow
-                    :current-session="currentSession"
-                    :is-loading="isLoading"
-                    :is-fullscreen="isFullscreen"
-                    :api-config="apiConfig"
-                    :preset-title="getCurrentPresetTitle()"
-                    :show-toolbar="showToolbar"
-                    @toggle-fullscreen="toggleFullscreen"
-                    @hide-toolbar="hideToolbar"
-                    @toggle-toolbar="toggleToolbar"
-                    @copy-message="copyMessage"
-                    @send-message="handleSend"
-                    ref="chatWindowRef"
-                />
-            </div>
-            <!-- 底部信息栏 (仅桌面端显示) -->
-            <div class="hidden lg:block bg-white border-4 border-black shadow-retro mt-4 p-2 text-center">
-                <div class="text-xs font-bold">
-                    © 2025 RetroBot | Made with ❤️ and ☕ |
-                    <a href="https://github.com/liu-ziting/" target="_blank" class="text-retro-blue hover:underline">Powered by Liuziting</a>
+                    <!-- ChatWindow 组件 -->
+                    <ChatWindow
+                        :current-session="currentSession"
+                        :is-loading="isLoading"
+                        :is-fullscreen="isFullscreen"
+                        :api-config="apiConfig"
+                        :preset-title="getCurrentPresetTitle()"
+                        :show-toolbar="showToolbar"
+                        @toggle-fullscreen="toggleFullscreen"
+                        @hide-toolbar="hideToolbar"
+                        @toggle-toolbar="toggleToolbar"
+                        @copy-message="copyMessage"
+                        @send-message="handleSend"
+                        ref="chatWindowRef"
+                    />
+                </div>
+
+                <!-- 底部信息栏 (仅桌面端显示) -->
+                <div class="hidden lg:block bg-white border-4 border-black shadow-retro mt-4 p-2 text-center flex-shrink-0">
+                    <div class="text-xs font-bold">
+                        © 2025 RetroBot | Made with ❤️ and ☕ |
+                        <a href="https://github.com/liu-ziting/" target="_blank" class="text-retro-blue hover:underline">Powered by Liuziting</a>
+                    </div>
                 </div>
             </div>
         </div>
