@@ -53,7 +53,7 @@ export const useChatStore = defineStore('chat', () => {
     })
 
     // 方法
-    const createSession = (title = '新对话') => {
+    const createSession = (title = 'New Chat') => {
         const session: ChatSession = {
             id: Date.now().toString(),
             title,
