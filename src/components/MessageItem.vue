@@ -17,8 +17,8 @@
                     @click.stop="toggleToolbar"
                 >
                     <!-- Message content or loading animation -->
-                    <div v-if="message.content && message.content.trim()" class="whitespace-pre-wrap">
-                        {{ message.content }}
+                    <div v-if="message.content && message.content.trim()" class="message-content">
+                        <MessageContent :content="message.content" />
                     </div>
                     <div v-else-if="message.role === 'assistant' && (!message.content || message.content.trim() === '') && isLoading" class="flex items-center gap-1">
                         <div class="w-2 h-2 bg-black rounded-full animate-bounce"></div>
@@ -65,6 +65,7 @@
 import { ref } from 'vue'
 import { notifySuccess, notifyError } from '../utils/notification'
 import type { Message } from '../types/chat'
+import MessageContent from './MessageContent.vue'
 
 interface Props {
     message: Message
